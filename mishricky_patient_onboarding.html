@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mishricky Medical – Patient Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:      #0b1a2e;
+    --navy-mid:  #0f2240;
+    --navy-card: #112645;
+    --navy-input:#0d1e38;
+    --blue-400:  #3a9bd5;
+    --blue-300:  #5dade2;
+    --blue-200:  #85c1e9;
+    --blue-100:  #b8ddf4;
+    --white:     #ffffff;
+    --grey-400:  #6b7f99;
+    --grey-300:  #8fa6c2;
+    --grey-200:  #b0c4d8;
+    --success:   #27ae60;
+    --error:     #e74c3c;
+    --border:    rgba(93,173,226,0.18);
+    --border-focus: rgba(93,173,226,0.7);
+    --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  html, body {
+    min-height: 100vh;
+    background: var(--navy);
+    font-family: var(--font);
+    color: var(--white);
+    overscroll-behavior: none;
+  }
+
+  /* ── Background DNA-ish shimmer ── */
+  body::before {
+    content:'';
+    position:fixed; inset:0; z-index:0;
+    background:
+      radial-gradient(ellipse 60% 80% at 50% -10%, rgba(58,155,213,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 80% 110%, rgba(93,173,226,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 40% at -10% 50%, rgba(93,173,226,0.06) 0%, transparent 60%);
+    pointer-events:none;
+  }
+
+  .page-wrap {
+    position:relative; z-index:1;
+    min-height:100vh;
+    display:flex; flex-direction:column;
+    padding-bottom: 40px;
+  }
+
+  /* ── Header ── */
+  header {
+    display:flex; align-items:center; gap:7px;
+    padding: 22px 28px 18px;
+    border-bottom: 1px solid var(--border);
+    background: #0b1a2e;
+    backdrop-filter: blur(12px);
+    position:sticky; top:0; z-index:100;
+  }
+
+  .logo-mark {
+    width:44px; height:44px;
+    background: linear-gradient(135deg, var(--blue-400), var(--blue-200));
+    border-radius: 10px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .logo-mark svg { width:26px; height:26px; }
+
+  .header-text h1 {
+    font-size:18px; font-weight:700; letter-spacing:-0.3px; line-height:1.3;
+  }
+  .header-text p {
+    font-size:12px; color:var(--blue-200); font-weight:400; margin-top:1px;
+  }
+
+  .header-right {
+    margin-left:auto;
+    text-align:right;
+  }
+  .step-indicator {
+    font-size:11px; color:var(--grey-300); font-weight:500; letter-spacing:0.5px; text-transform:uppercase;
+  }
+  .step-dots { display:flex; gap:5px; margin-top:5px; justify-content:flex-end; }
+  .step-dots span {
+    width:7px; height:7px; border-radius:50%;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+  .step-dots span.active { background: var(--blue-300); }
+  .step-dots span.done   { background: var(--success); }
+
+  /* ── Progress bar ── */
+  .progress-track {
+    height:3px; background: rgba(93,173,226,0.12);
+    position:sticky; top:83px; z-index:99;
+  }
+  .progress-fill {
+    height:100%; background:linear-gradient(90deg, var(--blue-400), var(--blue-200));
+    transition: width 0.4s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* ── Sections (pages) ── */
+  .sections-wrap {
+    flex:1; padding:28px 20px 0;
+    max-width:760px; margin:0 auto; width:100%;
+  }
+
+  .form-section {
+    display:none; animation: fadeIn 0.35s ease;
+  }
+  .form-section.active { display:block; }
+
+  @keyframes fadeIn {
+    from { opacity:0; transform:translateY(14px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  .section-header {
+    margin-bottom:24px;
+  }
+  .section-label {
+    font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--blue-300); font-weight:600; margin-bottom:6px;
+  }
+  .section-title {
+    font-size:24px; font-weight:700; letter-spacing:-0.5px;
+  }
+  .section-subtitle {
+    font-size:13px; color:var(--grey-300); margin-top:4px; font-weight:400;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    margin-bottom: 16px;
+    position:relative;
+    overflow:hidden;
+  }
+  .card::before {
+    content:'';
+    position:absolute; top:0; left:0; right:0; height:1px;
+    background: linear-gradient(90deg, transparent, rgba(93,173,226,0.3), transparent);
+  }
+
+  .card-title {
+    font-size:12px; font-weight:600; letter-spacing:1px; text-transform:uppercase;
+    color:var(--blue-200); margin-bottom:18px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .card-title::before {
+    content:'';
+    width:3px; height:14px; border-radius:2px;
+    background: linear-gradient(180deg, var(--blue-400), var(--blue-200));
+  }
+
+  /* ── Field groups ── */
+  .field-row {
+    display:grid; gap:14px;
+    margin-bottom:14px;
+  }
+  .field-row:last-child { margin-bottom:0; }
+  .field-row.col-2 { grid-template-columns:1fr 1fr; }
+  .field-row.col-3 { grid-template-columns:1fr 1fr 1fr; }
+  .field-row.col-1 { grid-template-columns:1fr; }
+
+  .field {
+    display:flex; flex-direction:column; gap:7px;
+  }
+
+  label {
+    font-size:11.5px; font-weight:600; letter-spacing:0.4px;
+    color:var(--grey-200);
+    display:flex; align-items:center; gap:5px;
+  }
+  label .required { color:var(--blue-300); font-size:13px; line-height:1; }
+  label .hint { font-weight:400; color:var(--grey-400); font-size:10.5px; margin-left:4px; }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  select {
+    background: var(--navy-input);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--white);
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    width:100%;
+    appearance: none;
+    -webkit-appearance:none;
+  }
+  input::placeholder { color: var(--grey-400); font-weight:400; font-size:14px; }
+
+  input:focus, select:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(93,173,226,0.1);
+    background: rgba(13,30,56,0.9);
+  }
+
+  input.error { border-color: rgba(231,76,60,0.6); }
+  input.valid { border-color: rgba(39,174,96,0.5); }
+
+  .error-msg {
+    font-size:11px; color:var(--error); font-weight:500;
+    display:none; margin-top:-4px;
+  }
+  .error-msg.show { display:block; }
+
+  /* Select arrow */
+  .select-wrap { position:relative; }
+  .select-wrap::after {
+    content:'';
+    position:absolute; right:13px; top:50%; transform:translateY(-50%);
+    width:0; height:0;
+    border-left:5px solid transparent;
+    border-right:5px solid transparent;
+    border-top:6px solid var(--grey-400);
+    pointer-events:none;
+  }
+  .select-wrap select { padding-right:36px; cursor:pointer; }
+  select option { background:var(--navy-mid); color:var(--white); }
+
+  /* ── Medicare special layout ── */
+  .medicare-row {
+    display:flex; align-items:flex-end; gap:10px;
+  }
+  .medicare-number-wrap { flex:1; }
+  .medicare-irn-wrap { flex:0 0 70px; }
+  .medicare-expiry-wrap { flex:0 0 110px; }
+  .medicare-gender-wrap { flex:0 0 130px; }
+
+  .medicare-number-input {
+    font-size:17px !important; letter-spacing:2px;
+    font-weight:600 !important;
+  }
+  .irn-input {
+    text-align:center; font-size:17px !important;
+    font-weight:700 !important; letter-spacing:0 !important;
+  }
+
+  .irn-label-note {
+    font-size:10px; color:var(--grey-400); margin-top:3px; font-weight:400;
+  }
+
+  /* ── Date of birth split inputs ── */
+  .dob-row {
+    display:flex; gap:10px;
+  }
+  .dob-row .field { flex:1; }
+  .dob-row .field.year { flex:1.4; }
+
+  /* ── Sex / Gender selector tiles ── */
+  .tile-group {
+    display:flex; gap:10px; flex-wrap:wrap;
+  }
+  .tile {
+    flex:1; min-width:80px;
+    background: var(--navy-input);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 11px 10px;
+    text-align:center;
+    cursor:pointer;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    font-size:13px; font-weight:500;
+    user-select:none;
+    -webkit-user-select:none;
+  }
+  .tile:active { transform:scale(0.97); }
+  .tile.selected {
+    border-color: var(--blue-300);
+    background: rgba(93,173,226,0.12);
+    box-shadow: 0 0 0 3px rgba(93,173,226,0.1);
+    color: var(--blue-200);
+    font-weight:600;
+  }
+  .tile .tile-icon { font-size:18px; display:block; margin-bottom:4px; }
+
+  /* ── Summary card (review) ── */
+  .summary-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:0;
+  }
+  .summary-item {
+    padding:10px 0;
+    border-bottom:1px solid var(--border);
+  }
+  .summary-item:nth-last-child(-n+2) { border-bottom:none; }
+  .summary-item .s-label { font-size:10.5px; color:var(--grey-400); font-weight:500; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px; }
+  .summary-item .s-value { font-size:14px; font-weight:600; color:var(--white); }
+  .summary-item .s-value.empty { color:var(--grey-400); font-style:italic; font-weight:400; font-size:13px; }
+
+  /* ── Nav buttons ── */
+  .nav-bar {
+    display:flex; gap:12px; align-items:center;
+    max-width:760px; margin:28px auto 0; padding:0 20px;
+  }
+
+  .btn {
+    border:none; cursor:pointer; font-family:var(--font);
+    font-weight:600; border-radius:var(--radius-sm);
+    transition: all 0.2s;
+    display:flex; align-items:center; gap:8px;
+  }
+  .btn:active { transform:scale(0.97); }
+
+  .btn-back {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--grey-300);
+    padding: 13px 20px;
+    font-size:14px;
+  }
+  .btn-back:hover { border-color:var(--border-focus); color:var(--white); }
+
+  .btn-next {
+    flex:1;
+    background: linear-gradient(135deg, var(--blue-400) 0%, #2980b9 100%);
+    color: var(--white);
+    padding:15px 24px;
+    font-size:15px;
+    justify-content:center;
+    box-shadow: 0 4px 16px rgba(58,155,213,0.3);
+  }
+  .btn-next:hover { box-shadow: 0 6px 24px rgba(58,155,213,0.45); }
+
+  .btn-submit {
+    flex:1;
+    background: linear-gradient(135deg, var(--success) 0%, #1e8449 100%);
+    color:var(--white);
+    padding:15px 24px;
+    font-size:15px;
+    justify-content:center;
+    box-shadow: 0 4px 16px rgba(39,174,96,0.3);
+  }
+  .btn-submit:hover { box-shadow: 0 6px 24px rgba(39,174,96,0.45); }
+
+  /* ── Success screen ── */
+  .success-screen {
+    display:none; flex-direction:column; align-items:center; justify-content:center;
+    min-height:70vh; text-align:center; padding:40px 20px;
+    animation: fadeIn 0.5s ease;
+  }
+  .success-screen.active { display:flex; }
+  .success-icon {
+    width:80px; height:80px; border-radius:50%;
+    background: linear-gradient(135deg, var(--success), #1e8449);
+    display:flex; align-items:center; justify-content:center;
+    font-size:38px; margin-bottom:24px;
+    box-shadow: 0 8px 32px rgba(39,174,96,0.35);
+  }
+  .success-screen h2 { font-size:26px; font-weight:700; margin-bottom:10px; }
+  .success-screen p { color:var(--grey-300); font-size:15px; max-width:320px; line-height:1.6; }
+
+  .data-output-card {
+    background: var(--navy-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px; margin-top:28px;
+    width:100%; max-width:560px;
+    text-align:left;
+  }
+  .data-output-card h3 {
+    font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--blue-200);
+    margin-bottom:14px; font-weight:600;
+  }
+  .data-output-card pre {
+    font-family:'SF Mono','Fira Mono',monospace;
+    font-size:12px; line-height:1.8;
+    color:var(--grey-200);
+    white-space:pre-wrap; word-break:break-all;
+    max-height:320px; overflow-y:auto;
+  }
+
+  .btn-reset {
+    margin-top:20px;
+    background:transparent;
+    border:1.5px solid var(--border);
+    color:var(--grey-300);
+    padding:12px 24px;
+    font-size:14px;
+  }
+
+  /* ── Copy button ── */
+  .btn-copy {
+    display:flex; align-items:center; gap:6px;
+    background: rgba(93,173,226,0.1);
+    border: 1px solid var(--border-focus);
+    color:var(--blue-200);
+    padding:8px 16px; border-radius:6px;
+    font-size:12px; font-weight:600;
+    cursor:pointer; margin-top:12px;
+    transition: background 0.2s;
+  }
+  .btn-copy:hover { background:rgba(93,173,226,0.2); }
+
+  /* ── Responsive ── */
+  @media(max-width:500px) {
+    .field-row.col-2 { grid-template-columns:1fr; }
+    .field-row.col-3 { grid-template-columns:1fr 1fr; }
+    .medicare-row { flex-wrap:wrap; }
+    .medicare-expiry-wrap, .medicare-gender-wrap { flex:1; }
+    header { padding:16px 16px 14px; }
+    .sections-wrap { padding:20px 14px 0; }
+    .section-title { font-size:20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- Header -->
+  <header>
+    <div style="display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;gap:7px;">
+            <img src="data:image/png;base64,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" alt="Mishricky Medical" style="height:2.8em;width:auto;flex-shrink:0;">
+        <h1 style="font-size:18px;font-weight:700;letter-spacing:-0.3px;line-height:1.2;"><span style="font-weight:700;color:#fff;display:block;">Mishricky</span><span style="font-weight:500;color:#5dade2;display:block;">Medical</span></h1>
+      </div>
+      <p style="font-size:12px;color:var(--blue-200);font-weight:400;margin:2px 0 0 17px;">New Patient Registration</p>
+    </div>
+    <div class="header-right">
+      <div class="step-indicator">Step <span id="stepNumLabel">1</span> of 3</div>
+      <div class="step-dots">
+        <span id="dot0" class="active"></span>
+        <span id="dot1"></span>
+        <span id="dot2"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Progress bar -->
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:33%"></div>
+  </div>
+
+  <div class="sections-wrap">
+
+    <!-- ═══ SECTION 1: Personal Info ═══ -->
+    <div class="form-section active" id="section0">
+      <div class="section-header">
+        <div class="section-label">Step 1 of 3</div>
+        <div class="section-title">Personal Details</div>
+        <div class="section-subtitle">Please enter your name and date of birth exactly as they appear on your Medicare card.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Name</div>
+        <div class="field-row col-2">
+          <div class="field">
+            <label>First Name <span class="required">*</span></label>
+            <input type="text" id="firstName" placeholder="e.g. Jane" autocomplete="given-name">
+            <span class="error-msg" id="firstNameErr">Please enter your first name.</span>
+          </div>
+          <div class="field">
+            <label>Surname <span class="required">*</span></label>
+            <input type="text" id="lastName" placeholder="e.g. Smith" autocomplete="family-name">
+            <span class="error-msg" id="lastNameErr">Please enter your surname.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Date of Birth</div>
+        <div class="dob-row">
+          <div class="field">
+            <label>Day <span class="required">*</span></label>
+            <input type="text" id="dobDay" placeholder="DD" maxlength="2" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label>Month <span class="required">*</span></label>
+            <input type="text" id="dobMonth" placeholder="MM" maxlength="2" inputmode="numeric">
+          </div>
+          <div class="field year">
+            <label>Year <span class="required">*</span></label>
+            <input type="text" id="dobYear" placeholder="YYYY" maxlength="4" inputmode="numeric">
+          </div>
+        </div>
+        <span class="error-msg" id="dobErr" style="margin-top:6px;">Please enter a valid date of birth.</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Sex at Birth</div>
+        <div class="field" style="margin-bottom:14px;">
+          <label>Sex at Birth <span class="required">*</span></label>
+          <div class="tile-group" id="sexTiles">
+            <div class="tile" data-val="Not stated" onclick="selectTile('sexTiles','sexAtBirth',this)">
+              <span class="tile-icon">—</span>Not stated
+            </div>
+            <div class="tile" data-val="Male" onclick="selectTile('sexTiles','sexAtBirth',this)">
+              <span class="tile-icon">♂</span>Male
+            </div>
+            <div class="tile" data-val="Female" onclick="selectTile('sexTiles','sexAtBirth',this)">
+              <span class="tile-icon">♀</span>Female
+            </div>
+            <div class="tile" data-val="Intersex/Other" onclick="selectTile('sexTiles','sexAtBirth',this)">
+              <span class="tile-icon">⚥</span>Intersex/Other
+            </div>
+          </div>
+          <input type="hidden" id="sexAtBirth">
+          <span class="error-msg" id="sexErr">Please select sex at birth.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 2: Medicare & Contact ═══ -->
+    <div class="form-section" id="section1">
+      <div class="section-header">
+        <div class="section-label">Step 2 of 3</div>
+        <div class="section-title">Medicare &amp; Contact</div>
+        <div class="section-subtitle">Your Medicare details and how we can reach you.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Medicare Card</div>
+        <!-- Medicare No + IRN + Expiry + Gender in one row -->
+        <div class="field-row col-1" style="margin-bottom:14px;">
+          <label>Medicare Number <span class="required">*</span> <span class="hint">10 digits from your card</span></label>
+          <div class="medicare-row">
+            <div class="medicare-number-wrap field">
+              <input type="text" id="medicareNo" class="medicare-number-input" placeholder="2XXX XXXXX X" maxlength="11" inputmode="numeric">
+              <span class="error-msg" id="medicareErr">Please enter a valid 10-digit Medicare number.</span>
+            </div>
+            <div class="medicare-irn-wrap field">
+              <label style="font-size:10.5px;">IRN <span class="required">*</span></label>
+              <input type="text" id="medicareIRN" class="irn-input" placeholder="1" maxlength="1" inputmode="numeric">
+              <div class="irn-label-note">1 digit beside your name</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-row col-2">
+          <div class="field">
+            <label>Expiry Date <span class="required">*</span> <span class="hint">MM/YYYY</span></label>
+            <input type="text" id="medicareExpiry" placeholder="MM/YYYY" maxlength="7" inputmode="numeric">
+            <span class="error-msg" id="expiryErr">Please enter a valid expiry (MM/YYYY).</span>
+          </div>
+          <div class="field">
+            <label>Medicare Gender <span class="required">*</span></label>
+            <div class="select-wrap">
+              <select id="medicareGender">
+                <option value="">Select…</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Not stated">Not stated / other</option>
+              </select>
+            </div>
+            <span class="error-msg" id="medicareGenderErr">Please select Medicare gender.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Address</div>
+        <div class="field-row col-1">
+          <div class="field">
+            <label>Street Address <span class="required">*</span></label>
+            <input type="text" id="street" placeholder="123 Example Street" autocomplete="street-address">
+            <span class="error-msg" id="streetErr">Please enter your street address.</span>
+          </div>
+        </div>
+        <div class="field-row col-2">
+          <div class="field">
+            <label>Suburb <span class="required">*</span></label>
+            <input type="text" id="suburb" placeholder="Suburb" autocomplete="address-level2">
+            <span class="error-msg" id="suburbErr">Please enter your suburb.</span>
+          </div>
+          <div class="field">
+            <label>Postcode <span class="required">*</span></label>
+            <input type="text" id="postcode" placeholder="2650" maxlength="4" inputmode="numeric" autocomplete="postal-code">
+            <span class="error-msg" id="postcodeErr">Please enter a valid 4-digit postcode.</span>
+          </div>
+        </div>
+        <div class="field-row col-1">
+          <div class="field">
+            <label>State <span class="required">*</span></label>
+            <div class="select-wrap">
+              <select id="state" autocomplete="address-level1">
+                <option value="">Select state…</option>
+                <option value="NSW">NSW</option>
+                <option value="VIC">VIC</option>
+                <option value="QLD">QLD</option>
+                <option value="WA">WA</option>
+                <option value="SA">SA</option>
+                <option value="TAS">TAS</option>
+                <option value="ACT">ACT</option>
+                <option value="NT">NT</option>
+              </select>
+            </div>
+            <span class="error-msg" id="stateErr">Please select your state.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Contact Details</div>
+        <div class="field-row col-1">
+          <div class="field">
+            <label>Phone Number <span class="required">*</span></label>
+            <input type="tel" id="phone" placeholder="04XX XXX XXX" autocomplete="tel" inputmode="tel">
+            <span class="error-msg" id="phoneErr">Please enter a valid phone number.</span>
+          </div>
+        </div>
+        <div class="field-row col-1">
+          <div class="field">
+            <label>Email Address <span class="hint">(optional)</span></label>
+            <input type="email" id="email" placeholder="jane@example.com" autocomplete="email" inputmode="email">
+            <span class="error-msg" id="emailErr">Please enter a valid email address.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 3: Review ═══ -->
+    <div class="form-section" id="section2">
+      <div class="section-header">
+        <div class="section-label">Step 3 of 3</div>
+        <div class="section-title">Review &amp; Confirm</div>
+        <div class="section-subtitle">Please check your details below before submitting.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Personal</div>
+        <div class="summary-grid" id="reviewPersonal"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Medicare</div>
+        <div class="summary-grid" id="reviewMedicare"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Address &amp; Contact</div>
+        <div class="summary-grid" id="reviewContact"></div>
+      </div>
+    </div>
+
+  </div><!-- /.sections-wrap -->
+
+  <!-- Success screen -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✓</div>
+    <h2>Registration Complete</h2>
+    <p>Thank you for registering with Mishricky Medical.<br>Your details have been securely sent to our reception team.</p>
+    <p style="margin-top:12px;font-size:13px;color:var(--grey-400);">Please return the tablet to the front desk.</p>
+    <div id="emailStatus" style="margin-top:16px;font-size:14px;"></div>
+    <button class="btn btn-reset" onclick="resetForm()">← Register another patient</button>
+  </div>
+
+  <!-- Nav -->
+  <div class="nav-bar" id="navBar">
+    <button class="btn btn-back" id="btnBack" onclick="goBack()" style="display:none">← Back</button>
+    <button class="btn btn-next" id="btnNext" onclick="goNext()">Continue →</button>
+  </div>
+
+</div><!-- /.page-wrap -->
+
+<script>
+  // ── State ──
+  let currentSection = 0;
+  const totalSections = 3;
+
+  // ── Tile selector ──
+  function selectTile(groupId, hiddenId, el) {
+    document.querySelectorAll('#'+groupId+' .tile').forEach(t => t.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById(hiddenId).value = el.dataset.val;
+  }
+
+  // ── Medicare number auto-formatting (XXXX XXXXX X) ──
+  document.getElementById('medicareNo').addEventListener('input', function() {
+    let v = this.value.replace(/\D/g,'');
+    if (v.length > 10) v = v.slice(0,10);
+    // Format: 4 5 1
+    let fmt = '';
+    if (v.length > 0) fmt = v.slice(0,4);
+    if (v.length > 4) fmt += ' ' + v.slice(4,9);
+    if (v.length > 9) fmt += ' ' + v.slice(9,10);
+    this.value = fmt;
+  });
+
+  // ── Expiry auto-formatting MM/YYYY ──
+  document.getElementById('medicareExpiry').addEventListener('input', function() {
+    let v = this.value.replace(/\D/g,'');
+    if (v.length > 6) v = v.slice(0,6);
+    if (v.length > 2) v = v.slice(0,2) + '/' + v.slice(2);
+    this.value = v;
+  });
+
+  // ── IRN: digits only 1-9 ──
+  document.getElementById('medicareIRN').addEventListener('input', function() {
+    this.value = this.value.replace(/[^1-9]/g,'').slice(0,1);
+  });
+
+  // ── DOB auto-tab ──
+  document.getElementById('dobDay').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g,'');
+    if (this.value.length === 2) document.getElementById('dobMonth').focus();
+  });
+  document.getElementById('dobMonth').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g,'');
+    if (this.value.length === 2) document.getElementById('dobYear').focus();
+  });
+  document.getElementById('dobYear').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g,'');
+  });
+
+  // ── Validation helpers ──
+  function showErr(id, show) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('show', show);
+  }
+
+  function markField(id, valid) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('error', !valid);
+    el.classList.toggle('valid', valid);
+  }
+
+  function val(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  function validateSection(n) {
+    let ok = true;
+
+    if (n === 0) {
+      const fn = val('firstName'), ln = val('lastName');
+      const dd = val('dobDay'), dm = val('dobMonth'), dy = val('dobYear');
+      const sex = val('sexAtBirth');
+
+      const fnOk = fn.length > 0;
+      markField('firstName', fnOk); showErr('firstNameErr', !fnOk);
+      if (!fnOk) ok = false;
+
+      const lnOk = ln.length > 0;
+      markField('lastName', lnOk); showErr('lastNameErr', !lnOk);
+      if (!lnOk) ok = false;
+
+      const dOk = dd >= 1 && dd <= 31;
+      const mOk = dm >= 1 && dm <= 12;
+      const yOk = dy >= 1900 && dy <= new Date().getFullYear();
+      const dobOk = dd && dm && dy && dOk && mOk && yOk;
+      showErr('dobErr', !dobOk);
+      ['dobDay','dobMonth','dobYear'].forEach(id => markField(id, dobOk));
+      if (!dobOk) ok = false;
+
+      const sexOk = sex.length > 0;
+      showErr('sexErr', !sexOk);
+      if (!sexOk) ok = false;
+    }
+
+    if (n === 1) {
+      // Medicare No: must be 10 digits (spaces stripped)
+      const mcRaw = val('medicareNo').replace(/\s/g,'');
+      const mcOk = /^[2-6]\d{9}$/.test(mcRaw);
+      markField('medicareNo', mcOk); showErr('medicareErr', !mcOk);
+      if (!mcOk) ok = false;
+
+      // Expiry MM/YYYY
+      const exp = val('medicareExpiry');
+      const expOk = /^(0[1-9]|1[0-2])\/\d{4}$/.test(exp);
+      markField('medicareExpiry', expOk); showErr('expiryErr', !expOk);
+      if (!expOk) ok = false;
+
+      // Medicare gender
+      const mg = val('medicareGender');
+      const mgOk = mg.length > 0;
+      showErr('medicareGenderErr', !mgOk);
+      if (!mgOk) ok = false;
+
+      // Address
+      const stOk = val('street').length > 0;
+      markField('street', stOk); showErr('streetErr', !stOk);
+      if (!stOk) ok = false;
+
+      const suOk = val('suburb').length > 0;
+      markField('suburb', suOk); showErr('suburbErr', !suOk);
+      if (!suOk) ok = false;
+
+      const stateOk = val('state').length > 0;
+      showErr('stateErr', !stateOk);
+      if (!stateOk) ok = false;
+
+      const pcOk = /^\d{4}$/.test(val('postcode'));
+      markField('postcode', pcOk); showErr('postcodeErr', !pcOk);
+      if (!pcOk) ok = false;
+
+      // Phone
+      const ph = val('phone').replace(/\s/g,'');
+      const phOk = /^(\+?61|0)[0-9]{8,9}$/.test(ph);
+      markField('phone', phOk); showErr('phoneErr', !phOk);
+      if (!phOk) ok = false;
+
+      // Email (optional)
+      const em = val('email');
+      if (em.length > 0) {
+        const emOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
+        markField('email', emOk); showErr('emailErr', !emOk);
+        if (!emOk) ok = false;
+      }
+    }
+
+    return ok;
+  }
+
+  // ── Build review ──
+  function buildReview() {
+    const dob = `${val('dobDay').padStart(2,'0')}/${val('dobMonth').padStart(2,'0')}/${val('dobYear')}`;
+    const mc = val('medicareNo');
+    const irn = val('medicareIRN');
+
+    renderSummary('reviewPersonal', [
+      { label:'First Name',    val: val('firstName') },
+      { label:'Surname',       val: val('lastName') },
+      { label:'Date of Birth', val: dob },
+      { label:'Sex at Birth',  val: val('sexAtBirth') },
+    ]);
+
+    renderSummary('reviewMedicare', [
+      { label:'Medicare No',       val: mc + (irn ? ' / IRN ' + irn : '') },
+      { label:'Expiry',            val: val('medicareExpiry') },
+      { label:'Medicare Gender',   val: val('medicareGender') },
+    ]);
+
+    renderSummary('reviewContact', [
+      { label:'Street',   val: val('street') },
+      { label:'Suburb',   val: val('suburb') },
+      { label:'State',    val: val('state') },
+      { label:'Postcode', val: val('postcode') },
+      { label:'Phone',    val: val('phone') },
+      { label:'Email',    val: val('email') || '—' },
+    ]);
+  }
+
+  function renderSummary(containerId, items) {
+    const el = document.getElementById(containerId);
+    el.innerHTML = items.map(item => `
+      <div class="summary-item">
+        <div class="s-label">${item.label}</div>
+        <div class="s-value ${item.val === '—' || !item.val ? 'empty' : ''}">${item.val || '—'}</div>
+      </div>
+    `).join('');
+  }
+
+  // ── Navigation ──
+  function updateUI() {
+    const pct = ((currentSection + 1) / totalSections) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('stepNumLabel').textContent = currentSection + 1;
+
+    for (let i = 0; i < totalSections; i++) {
+      const dot = document.getElementById('dot' + i);
+      dot.className = i < currentSection ? 'done' : (i === currentSection ? 'active' : '');
+    }
+
+    document.getElementById('btnBack').style.display = currentSection > 0 ? '' : 'none';
+    const btnNext = document.getElementById('btnNext');
+    if (currentSection === totalSections - 1) {
+      btnNext.textContent = '';
+      btnNext.innerHTML = '✓ Submit Registration';
+      btnNext.className = 'btn btn-submit';
+      btnNext.id = 'btnNext';
+    } else {
+      btnNext.textContent = '';
+      btnNext.innerHTML = 'Continue →';
+      btnNext.className = 'btn btn-next';
+    }
+  }
+
+  function goNext() {
+    if (!validateSection(currentSection)) return;
+
+    if (currentSection === totalSections - 1) {
+      submitForm();
+      return;
+    }
+
+    document.getElementById('section' + currentSection).classList.remove('active');
+    currentSection++;
+    document.getElementById('section' + currentSection).classList.add('active');
+    if (currentSection === 2) buildReview();
+    updateUI();
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+
+  function goBack() {
+    document.getElementById('section' + currentSection).classList.remove('active');
+    currentSection--;
+    document.getElementById('section' + currentSection).classList.add('active');
+    updateUI();
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+
+  // ── Submit ──
+  function submitForm() {
+    const dob = `${val('dobDay').padStart(2,'0')}/${val('dobMonth').padStart(2,'0')}/${val('dobYear')}`;
+    const data = {
+      "First Name":        val('firstName'),
+      "Surname":           val('lastName'),
+      "Date of Birth":     dob,
+      "Sex at Birth":      val('sexAtBirth'),
+      "Medicare No":       val('medicareNo').replace(/\s/g,''),
+      "IRN":               val('medicareIRN') || '—',
+      "Medicare Expiry":   val('medicareExpiry'),
+      "Medicare Gender":   val('medicareGender'),
+      "Street":            val('street'),
+      "Suburb":            val('suburb'),
+      "State":             val('state'),
+      "Postcode":          val('postcode'),
+      "Phone":             val('phone'),
+      "Email":             val('email') || '—',
+    };
+
+    // Send automatically via FormSubmit (requires form to be hosted on a live site)
+    var emailTo = 'reception@mishrickymedical.com';
+    var subject = 'New Patient Registration \u2013 ' + data['First Name'] + ' ' + data['Surname'];
+
+    fetch('https://formsubmit.co/ajax/' + emailTo, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(Object.assign({ _subject: subject, _template: 'table', _cc: 'reception.msthc@gmail.com' }, data))
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(resp) {
+      var el = document.getElementById('emailStatus');
+      if (resp && resp.success) {
+        el.innerHTML = '<span style="color:var(--success);">\u2713 Details sent to reception.</span>';
+      } else {
+        el.innerHTML = '<span style="color:var(--blue-200);">Registration saved. Reception will be notified.</span>';
+      }
+    })
+    .catch(function() {
+      document.getElementById('emailStatus').innerHTML =
+        '<span style="color:var(--warning);">Could not send automatically. Please notify reception.</span>';
+    });
+
+    // Show success immediately
+    document.getElementById('section2').classList.remove('active');
+    document.getElementById('navBar').style.display = 'none';
+    document.getElementById('successScreen').classList.add('active');
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+
+  function resetForm() {
+    // Reset all fields
+    document.querySelectorAll('input').forEach(i => i.value = '');
+    document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
+    document.querySelectorAll('.tile.selected').forEach(t => t.classList.remove('selected'));
+    document.querySelectorAll('.error-msg.show').forEach(e => e.classList.remove('show'));
+    document.querySelectorAll('input.error, input.valid').forEach(i => {
+      i.classList.remove('error','valid');
+    });
+
+    currentSection = 0;
+    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section0').classList.add('active');
+    document.getElementById('successScreen').classList.remove('active');
+    document.getElementById('navBar').style.display = '';
+    updateUI();
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+
+  // Init
+  updateUI();
+</script>
+</body>
+</html>
