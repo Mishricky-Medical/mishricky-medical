@@ -456,12 +456,12 @@
         <div class="card-title">Name</div>
         <div class="field-row col-2">
           <div class="field">
-            <label>First Name <span class="required">*</span></label>
+            <label>First Name</label>
             <input type="text" id="firstName" placeholder="e.g. Jane" autocomplete="given-name">
             <span class="error-msg" id="firstNameErr">Please enter your first name.</span>
           </div>
           <div class="field">
-            <label>Surname <span class="required">*</span></label>
+            <label>Surname</label>
             <input type="text" id="lastName" placeholder="e.g. Smith" autocomplete="family-name">
             <span class="error-msg" id="lastNameErr">Please enter your surname.</span>
           </div>
@@ -472,15 +472,15 @@
         <div class="card-title">Date of Birth</div>
         <div class="dob-row">
           <div class="field">
-            <label>Day <span class="required">*</span></label>
+            <label>Day</label>
             <input type="text" id="dobDay" placeholder="DD" maxlength="2" inputmode="numeric">
           </div>
           <div class="field">
-            <label>Month <span class="required">*</span></label>
+            <label>Month</label>
             <input type="text" id="dobMonth" placeholder="MM" maxlength="2" inputmode="numeric">
           </div>
           <div class="field year">
-            <label>Year <span class="required">*</span></label>
+            <label>Year</label>
             <input type="text" id="dobYear" placeholder="YYYY" maxlength="4" inputmode="numeric">
           </div>
         </div>
@@ -490,7 +490,7 @@
       <div class="card">
         <div class="card-title">Sex at Birth</div>
         <div class="field" style="margin-bottom:14px;">
-          <label>Sex at Birth <span class="required">*</span></label>
+          <label>Sex at Birth</label>
           <div class="tile-group" id="sexTiles">
             <div class="tile" data-val="Not stated" onclick="selectTile('sexTiles','sexAtBirth',this)">
               <span class="tile-icon">—</span>Not stated
@@ -523,14 +523,14 @@
         <div class="card-title">Medicare Card</div>
         <!-- Medicare No + IRN + Expiry + Gender in one row -->
         <div class="field-row col-1" style="margin-bottom:14px;">
-          <label>Medicare Number <span class="required">*</span> <span class="hint">10 digits from your card</span></label>
+          <label>Medicare Number <span class="hint">10 digits from your card</span></label>
           <div class="medicare-row">
             <div class="medicare-number-wrap field">
               <input type="text" id="medicareNo" class="medicare-number-input" placeholder="2XXX XXXXX X" maxlength="11" inputmode="numeric">
               <span class="error-msg" id="medicareErr">Please enter a valid 10-digit Medicare number.</span>
             </div>
             <div class="medicare-irn-wrap field">
-              <label style="font-size:10.5px;">IRN <span class="required">*</span></label>
+              <label style="font-size:10.5px;">IRN</label>
               <input type="text" id="medicareIRN" class="irn-input" placeholder="1" maxlength="1" inputmode="numeric">
               <div class="irn-label-note">1 digit beside your name</div>
             </div>
@@ -539,12 +539,12 @@
 
         <div class="field-row col-2">
           <div class="field">
-            <label>Expiry Date <span class="required">*</span> <span class="hint">MM/YYYY</span></label>
+            <label>Expiry Date <span class="hint">MM/YYYY</span></label>
             <input type="text" id="medicareExpiry" placeholder="MM/YYYY" maxlength="7" inputmode="numeric">
             <span class="error-msg" id="expiryErr">Please enter a valid expiry (MM/YYYY).</span>
           </div>
           <div class="field">
-            <label>Medicare Gender <span class="required">*</span></label>
+            <label>Medicare Gender</label>
             <div class="select-wrap">
               <select id="medicareGender">
                 <option value="">Select…</option>
@@ -562,26 +562,26 @@
         <div class="card-title">Address</div>
         <div class="field-row col-1">
           <div class="field">
-            <label>Street Address <span class="required">*</span></label>
+            <label>Street Address</label>
             <input type="text" id="street" placeholder="123 Example Street" autocomplete="street-address">
             <span class="error-msg" id="streetErr">Please enter your street address.</span>
           </div>
         </div>
         <div class="field-row col-2">
           <div class="field">
-            <label>Suburb <span class="required">*</span></label>
+            <label>Suburb</label>
             <input type="text" id="suburb" placeholder="Suburb" autocomplete="address-level2">
             <span class="error-msg" id="suburbErr">Please enter your suburb.</span>
           </div>
           <div class="field">
-            <label>Postcode <span class="required">*</span></label>
+            <label>Postcode</label>
             <input type="text" id="postcode" placeholder="2650" maxlength="4" inputmode="numeric" autocomplete="postal-code">
             <span class="error-msg" id="postcodeErr">Please enter a valid 4-digit postcode.</span>
           </div>
         </div>
         <div class="field-row col-1">
           <div class="field">
-            <label>State <span class="required">*</span></label>
+            <label>State</label>
             <div class="select-wrap">
               <select id="state" autocomplete="address-level1">
                 <option value="">Select state…</option>
@@ -604,14 +604,14 @@
         <div class="card-title">Contact Details</div>
         <div class="field-row col-1">
           <div class="field">
-            <label>Phone Number <span class="required">*</span></label>
+            <label>Phone Number</label>
             <input type="tel" id="phone" placeholder="04XX XXX XXX" autocomplete="tel" inputmode="tel">
             <span class="error-msg" id="phoneErr">Please enter a valid phone number.</span>
           </div>
         </div>
         <div class="field-row col-1">
           <div class="field">
-            <label>Email Address <span class="hint">(optional)</span></label>
+            <label>Email Address</label>
             <input type="email" id="email" placeholder="jane@example.com" autocomplete="email" inputmode="email">
             <span class="error-msg" id="emailErr">Please enter a valid email address.</span>
           </div>
@@ -735,80 +735,105 @@
   function validateSection(n) {
     let ok = true;
 
+    // Helper: only validate format if user has entered something
+    function optionalCheck(fieldId, errId, testFn) {
+      const v = val(fieldId);
+      if (v.length > 0) {
+        const passed = testFn(v);
+        markField(fieldId, passed); showErr(errId, !passed);
+        if (!passed) ok = false;
+      } else {
+        // Empty is fine – clear any previous error styling
+        markField(fieldId, true); showErr(errId, false);
+      }
+    }
+
     if (n === 0) {
-      const fn = val('firstName'), ln = val('lastName');
+      // First name – accept any non-empty value if provided
+      optionalCheck('firstName', 'firstNameErr', v => v.length > 0);
+
+      // Surname
+      optionalCheck('lastName', 'lastNameErr', v => v.length > 0);
+
+      // Date of birth – validate only if ANY part has been filled in
       const dd = val('dobDay'), dm = val('dobMonth'), dy = val('dobYear');
-      const sex = val('sexAtBirth');
+      const anyDob = dd.length > 0 || dm.length > 0 || dy.length > 0;
+      if (anyDob) {
+        const dOk = dd >= 1 && dd <= 31;
+        const mOk = dm >= 1 && dm <= 12;
+        const yOk = dy >= 1900 && dy <= new Date().getFullYear();
+        const dobOk = dd && dm && dy && dOk && mOk && yOk;
+        showErr('dobErr', !dobOk);
+        ['dobDay','dobMonth','dobYear'].forEach(id => markField(id, dobOk));
+        if (!dobOk) ok = false;
+      } else {
+        showErr('dobErr', false);
+        ['dobDay','dobMonth','dobYear'].forEach(id => markField(id, true));
+      }
 
-      const fnOk = fn.length > 0;
-      markField('firstName', fnOk); showErr('firstNameErr', !fnOk);
-      if (!fnOk) ok = false;
-
-      const lnOk = ln.length > 0;
-      markField('lastName', lnOk); showErr('lastNameErr', !lnOk);
-      if (!lnOk) ok = false;
-
-      const dOk = dd >= 1 && dd <= 31;
-      const mOk = dm >= 1 && dm <= 12;
-      const yOk = dy >= 1900 && dy <= new Date().getFullYear();
-      const dobOk = dd && dm && dy && dOk && mOk && yOk;
-      showErr('dobErr', !dobOk);
-      ['dobDay','dobMonth','dobYear'].forEach(id => markField(id, dobOk));
-      if (!dobOk) ok = false;
-
-      const sexOk = sex.length > 0;
-      showErr('sexErr', !sexOk);
-      if (!sexOk) ok = false;
+      // Sex at birth – no validation needed, always pass
+      showErr('sexErr', false);
     }
 
     if (n === 1) {
-      // Medicare No: must be 10 digits (spaces stripped)
+      // Medicare No – validate format only if something was entered
       const mcRaw = val('medicareNo').replace(/\s/g,'');
-      const mcOk = /^[2-6]\d{9}$/.test(mcRaw);
-      markField('medicareNo', mcOk); showErr('medicareErr', !mcOk);
-      if (!mcOk) ok = false;
+      if (mcRaw.length > 0) {
+        const mcOk = /^[2-6]\d{9}$/.test(mcRaw);
+        markField('medicareNo', mcOk); showErr('medicareErr', !mcOk);
+        if (!mcOk) ok = false;
+      } else {
+        markField('medicareNo', true); showErr('medicareErr', false);
+      }
 
       // Expiry MM/YYYY
       const exp = val('medicareExpiry');
-      const expOk = /^(0[1-9]|1[0-2])\/\d{4}$/.test(exp);
-      markField('medicareExpiry', expOk); showErr('expiryErr', !expOk);
-      if (!expOk) ok = false;
+      if (exp.length > 0) {
+        const expOk = /^(0[1-9]|1[0-2])\/\d{4}$/.test(exp);
+        markField('medicareExpiry', expOk); showErr('expiryErr', !expOk);
+        if (!expOk) ok = false;
+      } else {
+        markField('medicareExpiry', true); showErr('expiryErr', false);
+      }
 
-      // Medicare gender
-      const mg = val('medicareGender');
-      const mgOk = mg.length > 0;
-      showErr('medicareGenderErr', !mgOk);
-      if (!mgOk) ok = false;
+      // Medicare gender – always pass
+      showErr('medicareGenderErr', false);
 
-      // Address
-      const stOk = val('street').length > 0;
-      markField('street', stOk); showErr('streetErr', !stOk);
-      if (!stOk) ok = false;
+      // Address fields – accept anything if provided, skip if empty
+      optionalCheck('street', 'streetErr', v => v.length > 0);
+      optionalCheck('suburb', 'suburbErr', v => v.length > 0);
 
-      const suOk = val('suburb').length > 0;
-      markField('suburb', suOk); showErr('suburbErr', !suOk);
-      if (!suOk) ok = false;
+      // State – always pass
+      showErr('stateErr', false);
 
-      const stateOk = val('state').length > 0;
-      showErr('stateErr', !stateOk);
-      if (!stateOk) ok = false;
+      // Postcode – validate format only if entered
+      const pc = val('postcode');
+      if (pc.length > 0) {
+        const pcOk = /^\d{4}$/.test(pc);
+        markField('postcode', pcOk); showErr('postcodeErr', !pcOk);
+        if (!pcOk) ok = false;
+      } else {
+        markField('postcode', true); showErr('postcodeErr', false);
+      }
 
-      const pcOk = /^\d{4}$/.test(val('postcode'));
-      markField('postcode', pcOk); showErr('postcodeErr', !pcOk);
-      if (!pcOk) ok = false;
-
-      // Phone
+      // Phone – validate format only if entered
       const ph = val('phone').replace(/\s/g,'');
-      const phOk = /^(\+?61|0)[0-9]{8,9}$/.test(ph);
-      markField('phone', phOk); showErr('phoneErr', !phOk);
-      if (!phOk) ok = false;
+      if (ph.length > 0) {
+        const phOk = /^(\+?61|0)[0-9]{8,9}$/.test(ph);
+        markField('phone', phOk); showErr('phoneErr', !phOk);
+        if (!phOk) ok = false;
+      } else {
+        markField('phone', true); showErr('phoneErr', false);
+      }
 
-      // Email (optional)
+      // Email – validate format only if entered
       const em = val('email');
       if (em.length > 0) {
         const emOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
         markField('email', emOk); showErr('emailErr', !emOk);
         if (!emOk) ok = false;
+      } else {
+        markField('email', true); showErr('emailErr', false);
       }
     }
 
