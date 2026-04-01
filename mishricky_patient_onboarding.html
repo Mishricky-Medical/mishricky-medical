@@ -929,6 +929,58 @@
   }
 
   // ── Submit ──
+  // *** IMPORTANT: Replace this with your actual Web3Forms access key ***
+  // Get one free at https://web3forms.com — enter reception@mishrickymedical.com
+  var WEB3FORMS_KEY = 'a0289885-a731-45af-82b2-61610456199c';
+
+  function showSuccess(statusHtml) {
+    document.getElementById('section2').classList.remove('active');
+    document.getElementById('navBar').style.display = 'none';
+    document.getElementById('successScreen').classList.add('active');
+    document.getElementById('emailStatus').innerHTML = statusHtml;
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+
+  function sendViaFormSubmit(data, subject, emailTo) {
+    return fetch('https://formsubmit.co/ajax/' + emailTo, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(Object.assign({
+        _subject: subject,
+        _template: 'table',
+        _captcha: 'false'
+      }, data))
+    })
+    .then(function(r) {
+      if (!r.ok) throw new Error('FormSubmit HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(resp) {
+      if (resp && resp.success) return 'formsubmit';
+      throw new Error('FormSubmit returned success:false');
+    });
+  }
+
+  function sendViaWeb3Forms(data, subject) {
+    return fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(Object.assign({
+        access_key: WEB3FORMS_KEY,
+        subject: subject,
+        from_name: 'Mishricky Medical Patient Registration'
+      }, data))
+    })
+    .then(function(r) {
+      if (!r.ok) throw new Error('Web3Forms HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(resp) {
+      if (resp && resp.success) return 'web3forms';
+      throw new Error('Web3Forms returned success:false');
+    });
+  }
+
   function submitForm() {
     const dob = `${val('dobDay').padStart(2,'0')}/${val('dobMonth').padStart(2,'0')}/${val('dobYear')}`;
     const data = {
@@ -948,57 +1000,33 @@
       "Email":             val('email') || '—',
     };
 
-    // Send automatically via FormSubmit (requires form to be hosted on a live site)
     var emailTo = 'reception@mishrickymedical.com';
     var subject = 'New Patient Registration \u2013 ' + data['First Name'] + ' ' + data['Surname'];
 
-    // Show submitting state – don't show success until we know the email went through
+    // Show submitting state
     var btnNext = document.getElementById('btnNext');
     btnNext.disabled = true;
     btnNext.innerHTML = 'Submitting…';
 
-    fetch('https://formsubmit.co/ajax/' + emailTo, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(Object.assign({
-        _subject: subject,
-        _template: 'table',
-        _captcha: 'false'
-      }, data))
-    })
-    .then(function(r) {
-      if (!r.ok) {
-        throw new Error('FormSubmit returned HTTP ' + r.status);
-      }
-      return r.json();
-    })
-    .then(function(resp) {
-      // Show success screen
-      document.getElementById('section2').classList.remove('active');
-      document.getElementById('navBar').style.display = 'none';
-      document.getElementById('successScreen').classList.add('active');
-      window.scrollTo({ top:0, behavior:'smooth' });
+    // Try FormSubmit first, if it fails fall back to Web3Forms
+    sendViaFormSubmit(data, subject, emailTo)
+      .then(function(provider) {
+        showSuccess('<span style="color:var(--success);">\u2713 Details sent to reception.</span>');
+        console.log('Sent via ' + provider);
+      })
+      .catch(function(err) {
+        console.warn('FormSubmit failed (' + err.message + '), trying Web3Forms…');
 
-      var el = document.getElementById('emailStatus');
-      if (resp && resp.success) {
-        el.innerHTML = '<span style="color:var(--success);">\u2713 Details sent to reception.</span>';
-      } else {
-        // FormSubmit returned a response but success was false — likely needs activation
-        el.innerHTML = '<span style="color:var(--warning);">⚠ Email delivery pending. FormSubmit may need re-activation. Please notify reception directly.</span>';
-        console.warn('FormSubmit response:', JSON.stringify(resp));
-      }
-    })
-    .catch(function(err) {
-      // Show success screen anyway (data was captured in the review) but warn about email
-      document.getElementById('section2').classList.remove('active');
-      document.getElementById('navBar').style.display = 'none';
-      document.getElementById('successScreen').classList.add('active');
-      window.scrollTo({ top:0, behavior:'smooth' });
-
-      document.getElementById('emailStatus').innerHTML =
-        '<span style="color:var(--error);">⚠ Could not send email to reception. Please notify the front desk directly.</span>';
-      console.error('FormSubmit error:', err);
-    });
+        sendViaWeb3Forms(data, subject)
+          .then(function(provider) {
+            showSuccess('<span style="color:var(--success);">\u2713 Details sent to reception.</span>');
+            console.log('Sent via ' + provider + ' (fallback)');
+          })
+          .catch(function(err2) {
+            console.error('Both providers failed. FormSubmit:', err.message, 'Web3Forms:', err2.message);
+            showSuccess('<span style="color:var(--error);">\u26A0 Could not send email to reception. Please notify the front desk directly.</span>');
+          });
+      });
   }
 
   function resetForm() {
