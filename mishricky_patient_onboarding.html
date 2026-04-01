@@ -952,30 +952,53 @@
     var emailTo = 'reception@mishrickymedical.com';
     var subject = 'New Patient Registration \u2013 ' + data['First Name'] + ' ' + data['Surname'];
 
+    // Show submitting state – don't show success until we know the email went through
+    var btnNext = document.getElementById('btnNext');
+    btnNext.disabled = true;
+    btnNext.innerHTML = 'Submitting…';
+
     fetch('https://formsubmit.co/ajax/' + emailTo, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(Object.assign({ _subject: subject, _template: 'table', _cc: 'reception.msthc@gmail.com' }, data))
+      body: JSON.stringify(Object.assign({
+        _subject: subject,
+        _template: 'table',
+        _captcha: 'false'
+      }, data))
     })
-    .then(function(r) { return r.json(); })
+    .then(function(r) {
+      if (!r.ok) {
+        throw new Error('FormSubmit returned HTTP ' + r.status);
+      }
+      return r.json();
+    })
     .then(function(resp) {
+      // Show success screen
+      document.getElementById('section2').classList.remove('active');
+      document.getElementById('navBar').style.display = 'none';
+      document.getElementById('successScreen').classList.add('active');
+      window.scrollTo({ top:0, behavior:'smooth' });
+
       var el = document.getElementById('emailStatus');
       if (resp && resp.success) {
         el.innerHTML = '<span style="color:var(--success);">\u2713 Details sent to reception.</span>';
       } else {
-        el.innerHTML = '<span style="color:var(--blue-200);">Registration saved. Reception will be notified.</span>';
+        // FormSubmit returned a response but success was false — likely needs activation
+        el.innerHTML = '<span style="color:var(--warning);">⚠ Email delivery pending. FormSubmit may need re-activation. Please notify reception directly.</span>';
+        console.warn('FormSubmit response:', JSON.stringify(resp));
       }
     })
-    .catch(function() {
-      document.getElementById('emailStatus').innerHTML =
-        '<span style="color:var(--warning);">Could not send automatically. Please notify reception.</span>';
-    });
+    .catch(function(err) {
+      // Show success screen anyway (data was captured in the review) but warn about email
+      document.getElementById('section2').classList.remove('active');
+      document.getElementById('navBar').style.display = 'none';
+      document.getElementById('successScreen').classList.add('active');
+      window.scrollTo({ top:0, behavior:'smooth' });
 
-    // Show success immediately
-    document.getElementById('section2').classList.remove('active');
-    document.getElementById('navBar').style.display = 'none';
-    document.getElementById('successScreen').classList.add('active');
-    window.scrollTo({ top:0, behavior:'smooth' });
+      document.getElementById('emailStatus').innerHTML =
+        '<span style="color:var(--error);">⚠ Could not send email to reception. Please notify the front desk directly.</span>';
+      console.error('FormSubmit error:', err);
+    });
   }
 
   function resetForm() {
