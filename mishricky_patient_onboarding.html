@@ -403,6 +403,92 @@
   }
   .btn-copy:hover { background:rgba(93,173,226,0.2); }
 
+  /* ── Textarea ── */
+  textarea {
+    background: var(--navy-input);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--white);
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    width:100%;
+    resize: vertical;
+    min-height: 78px;
+    line-height: 1.5;
+  }
+  textarea::placeholder { color: var(--grey-400); font-weight:400; font-size:14px; }
+  textarea:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(93,173,226,0.1);
+    background: rgba(13,30,56,0.9);
+  }
+
+  /* ── Stacked tile list (e.g. Aboriginal / Torres Strait Islander status) ── */
+  .tile-group.stack { flex-direction:column; gap:8px; }
+  .tile-group.stack .tile {
+    text-align:left; min-width:0; width:100%;
+    padding:13px 14px; font-size:13.5px;
+  }
+
+  /* ── Consent / checkbox items ── */
+  .check-item {
+    display:flex; align-items:flex-start; gap:12px;
+    background: var(--navy-input);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    cursor:pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .check-item:last-child { margin-bottom:0; }
+  .check-item.checked {
+    border-color: var(--blue-300);
+    background: rgba(93,173,226,0.1);
+  }
+  .check-item input[type="checkbox"] {
+    appearance:none; -webkit-appearance:none;
+    flex:0 0 22px; width:22px; height:22px; margin-top:1px;
+    border:1.5px solid var(--border-focus);
+    border-radius:6px; background:var(--navy-card);
+    cursor:pointer; position:relative;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .check-item input[type="checkbox"]:checked {
+    background: var(--blue-400); border-color: var(--blue-400);
+  }
+  .check-item input[type="checkbox"]:checked::after {
+    content:'✓'; position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:14px; font-weight:700;
+  }
+  .check-text { flex:1; font-size:13px; line-height:1.5; color:var(--grey-200); font-weight:400; }
+  .check-text strong { color:var(--white); font-weight:600; display:block; margin-bottom:2px; font-size:13.5px; }
+  .check-text .req-tag { color:var(--blue-300); font-weight:600; }
+
+  /* ── Privacy / info statement block ── */
+  .info-block {
+    background: rgba(13,30,56,0.6);
+    border:1px solid var(--border);
+    border-left:3px solid var(--blue-400);
+    border-radius: var(--radius-sm);
+    padding:14px 16px; margin-bottom:16px;
+    font-size:12.5px; line-height:1.6; color:var(--grey-200);
+  }
+  .info-block strong { color:var(--blue-200); }
+  .info-block p { margin-bottom:8px; }
+  .info-block p:last-child { margin-bottom:0; }
+
+  /* ── Helper note under a card ── */
+  .field-note {
+    font-size:11px; color:var(--grey-400); font-weight:400;
+    margin-top:-4px; line-height:1.5;
+  }
+
   /* ── Responsive ── */
   @media(max-width:500px) {
     .field-row.col-2 { grid-template-columns:1fr; }
@@ -428,18 +514,22 @@
       <p style="font-size:12px;color:var(--blue-200);font-weight:400;margin:2px 0 0 0;">New Patient Registration</p>
     </div>
     <div class="header-right">
-      <div class="step-indicator">Step <span id="stepNumLabel">1</span> of 3</div>
+      <div class="step-indicator">Step <span id="stepNumLabel">1</span> of 7</div>
       <div class="step-dots">
         <span id="dot0" class="active"></span>
         <span id="dot1"></span>
         <span id="dot2"></span>
+        <span id="dot3"></span>
+        <span id="dot4"></span>
+        <span id="dot5"></span>
+        <span id="dot6"></span>
       </div>
     </div>
   </header>
 
   <!-- Progress bar -->
   <div class="progress-track">
-    <div class="progress-fill" id="progressFill" style="width:33%"></div>
+    <div class="progress-fill" id="progressFill" style="width:14%"></div>
   </div>
 
   <div class="sections-wrap">
@@ -447,13 +537,34 @@
     <!-- ═══ SECTION 1: Personal Info ═══ -->
     <div class="form-section active" id="section0">
       <div class="section-header">
-        <div class="section-label">Step 1 of 3</div>
+        <div class="section-label">Step 1 of 7</div>
         <div class="section-title">Personal Details</div>
         <div class="section-subtitle">Please enter your name and date of birth exactly as they appear on your Medicare card.</div>
       </div>
 
       <div class="card">
         <div class="card-title">Name</div>
+        <div class="field-row col-2" style="margin-bottom:14px;">
+          <div class="field">
+            <label>Title</label>
+            <div class="select-wrap">
+              <select id="title">
+                <option value="">Select…</option>
+                <option value="Mr">Mr</option>
+                <option value="Mrs">Mrs</option>
+                <option value="Ms">Ms</option>
+                <option value="Miss">Miss</option>
+                <option value="Master">Master</option>
+                <option value="Dr">Dr</option>
+                <option value="Mx">Mx</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Preferred Name <span class="hint">what you like to be called</span></label>
+            <input type="text" id="preferredName" placeholder="e.g. Janie" autocomplete="nickname">
+          </div>
+        </div>
         <div class="field-row col-2">
           <div class="field">
             <label>First Name</label>
@@ -509,12 +620,31 @@
           <span class="error-msg" id="sexErr">Please select sex at birth.</span>
         </div>
       </div>
+
+      <div class="card">
+        <div class="card-title">Gender Identity</div>
+        <div class="field" style="margin-bottom:14px;">
+          <label>How do you describe your gender? <span class="hint">optional</span></label>
+          <div class="tile-group" id="genderTiles">
+            <div class="tile" data-val="Man / Male" onclick="selectTile('genderTiles','genderIdentity',this)">Man / Male</div>
+            <div class="tile" data-val="Woman / Female" onclick="selectTile('genderTiles','genderIdentity',this)">Woman / Female</div>
+            <div class="tile" data-val="Non-binary" onclick="selectTile('genderTiles','genderIdentity',this)">Non-binary</div>
+            <div class="tile" data-val="I use a different term" onclick="selectTile('genderTiles','genderIdentity',this)">Different term</div>
+            <div class="tile" data-val="Prefer not to say" onclick="selectTile('genderTiles','genderIdentity',this)">Prefer not to say</div>
+          </div>
+          <input type="hidden" id="genderIdentity">
+        </div>
+        <div class="field">
+          <label>Preferred Pronouns <span class="hint">optional</span></label>
+          <input type="text" id="pronouns" placeholder="e.g. she/her, he/him, they/them">
+        </div>
+      </div>
     </div>
 
     <!-- ═══ SECTION 2: Medicare & Contact ═══ -->
     <div class="form-section" id="section1">
       <div class="section-header">
-        <div class="section-label">Step 2 of 3</div>
+        <div class="section-label">Step 2 of 7</div>
         <div class="section-title">Medicare &amp; Contact</div>
         <div class="section-subtitle">Your Medicare details and how we can reach you.</div>
       </div>
@@ -554,6 +684,28 @@
               </select>
             </div>
             <span class="error-msg" id="medicareGenderErr">Please select Medicare gender.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Concession &amp; Veteran Cards</div>
+        <div class="field-row col-2">
+          <div class="field">
+            <label>Concession Card Type <span class="hint">if applicable</span></label>
+            <div class="select-wrap">
+              <select id="concessionType">
+                <option value="">None</option>
+                <option value="Pensioner Concession Card">Pensioner Concession Card</option>
+                <option value="Health Care Card">Health Care Card</option>
+                <option value="Commonwealth Seniors Health Card">Commonwealth Seniors Health Card</option>
+                <option value="DVA Card">DVA (Veterans') Card</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Card / DVA Number <span class="hint">if applicable</span></label>
+            <input type="text" id="concessionNo" placeholder="Card number">
           </div>
         </div>
       </div>
@@ -616,13 +768,266 @@
             <span class="error-msg" id="emailErr">Please enter a valid email address.</span>
           </div>
         </div>
+        <div class="field-row col-1">
+          <div class="field">
+            <label>Preferred Contact Method</label>
+            <div class="select-wrap">
+              <select id="preferredContact">
+                <option value="">Select…</option>
+                <option value="Mobile / SMS">Mobile / SMS</option>
+                <option value="Phone call">Phone call</option>
+                <option value="Email">Email</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ═══ SECTION 3: Review ═══ -->
+    <!-- ═══ SECTION 3: Cultural Background ═══ -->
     <div class="form-section" id="section2">
       <div class="section-header">
-        <div class="section-label">Step 3 of 3</div>
+        <div class="section-label">Step 3 of 7</div>
+        <div class="section-title">Cultural Background</div>
+        <div class="section-subtitle">This helps us provide care that is safe and respectful of your background. Answering is voluntary.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Aboriginal &amp; Torres Strait Islander Origin</div>
+        <div class="field">
+          <label>Are you of Aboriginal or Torres Strait Islander origin?</label>
+          <div class="tile-group stack" id="atsiTiles">
+            <div class="tile" data-val="No - neither" onclick="selectTile('atsiTiles','atsiStatus',this)">No — neither Aboriginal nor Torres Strait Islander origin</div>
+            <div class="tile" data-val="Aboriginal" onclick="selectTile('atsiTiles','atsiStatus',this)">Yes — Aboriginal</div>
+            <div class="tile" data-val="Torres Strait Islander" onclick="selectTile('atsiTiles','atsiStatus',this)">Yes — Torres Strait Islander</div>
+            <div class="tile" data-val="Both Aboriginal and Torres Strait Islander" onclick="selectTile('atsiTiles','atsiStatus',this)">Yes — both Aboriginal and Torres Strait Islander</div>
+            <div class="tile" data-val="Prefer not to say" onclick="selectTile('atsiTiles','atsiStatus',this)">Prefer not to say</div>
+          </div>
+          <input type="hidden" id="atsiStatus">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Country &amp; Language</div>
+        <div class="field-row col-2" style="margin-bottom:14px;">
+          <div class="field">
+            <label>Country of Birth <span class="hint">optional</span></label>
+            <input type="text" id="countryOfBirth" placeholder="e.g. Australia" autocomplete="country-name">
+          </div>
+          <div class="field">
+            <label>Language Spoken at Home <span class="hint">optional</span></label>
+            <input type="text" id="languageHome" placeholder="e.g. English">
+          </div>
+        </div>
+        <div class="field">
+          <label>Do you need an interpreter?</label>
+          <div class="tile-group" id="interpreterTiles">
+            <div class="tile" data-val="No" onclick="selectTile('interpreterTiles','interpreter',this)">No</div>
+            <div class="tile" data-val="Yes" onclick="selectTile('interpreterTiles','interpreter',this)">Yes</div>
+          </div>
+          <input type="hidden" id="interpreter">
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 4: Emergency & Care Team ═══ -->
+    <div class="form-section" id="section3">
+      <div class="section-header">
+        <div class="section-label">Step 4 of 7</div>
+        <div class="section-title">Emergency &amp; Care Team</div>
+        <div class="section-subtitle">Who we should contact in an emergency, and providers involved in your care.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Emergency Contact</div>
+        <div class="field-row col-2" style="margin-bottom:14px;">
+          <div class="field">
+            <label>Full Name</label>
+            <input type="text" id="emergName" placeholder="e.g. John Smith">
+          </div>
+          <div class="field">
+            <label>Relationship to You</label>
+            <input type="text" id="emergRel" placeholder="e.g. Spouse, Parent">
+          </div>
+        </div>
+        <div class="field-row col-1">
+          <div class="field">
+            <label>Phone Number</label>
+            <input type="tel" id="emergPhone" placeholder="04XX XXX XXX" inputmode="tel">
+            <span class="error-msg" id="emergPhoneErr">Please enter a valid phone number.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Next of Kin</div>
+        <p class="field-note" style="margin-bottom:14px;">Leave blank if this is the same as your emergency contact above.</p>
+        <div class="field-row col-2" style="margin-bottom:14px;">
+          <div class="field">
+            <label>Full Name <span class="hint">optional</span></label>
+            <input type="text" id="nokName" placeholder="e.g. Mary Smith">
+          </div>
+          <div class="field">
+            <label>Relationship to You <span class="hint">optional</span></label>
+            <input type="text" id="nokRel" placeholder="e.g. Child, Sibling">
+          </div>
+        </div>
+        <div class="field-row col-1">
+          <div class="field">
+            <label>Phone Number <span class="hint">optional</span></label>
+            <input type="tel" id="nokPhone" placeholder="04XX XXX XXX" inputmode="tel">
+            <span class="error-msg" id="nokPhoneErr">Please enter a valid phone number.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Other Healthcare Providers</div>
+        <div class="field-row col-1" style="margin-bottom:14px;">
+          <div class="field">
+            <label>Previous Doctor / Medical Practice <span class="hint">so we can request your records</span></label>
+            <input type="text" id="prevPractice" placeholder="Practice name &amp; suburb">
+          </div>
+        </div>
+        <div class="field-row col-1">
+          <div class="field">
+            <label>Preferred Pharmacy <span class="hint">optional</span></label>
+            <input type="text" id="pharmacy" placeholder="Pharmacy name &amp; suburb">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 5: Health Summary ═══ -->
+    <div class="form-section" id="section4">
+      <div class="section-header">
+        <div class="section-label">Step 5 of 7</div>
+        <div class="section-title">Health Summary</div>
+        <div class="section-subtitle">A brief snapshot of your health. Your doctor will confirm these details with you at your first visit.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Allergies &amp; Adverse Reactions</div>
+        <label class="check-item" id="noAllergiesItem">
+          <input type="checkbox" id="noAllergies">
+          <span class="check-text"><strong>No known allergies</strong>Tick this if you have no known allergies or adverse drug reactions.</span>
+        </label>
+        <div class="field" style="margin-top:12px;">
+          <label>If you have allergies, please list them <span class="hint">and the reaction</span></label>
+          <textarea id="allergies" placeholder="e.g. Penicillin — rash; Peanuts — anaphylaxis"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Current Medications</div>
+        <label class="check-item" id="noMedsItem">
+          <input type="checkbox" id="noMeds">
+          <span class="check-text"><strong>Not currently taking any medications</strong></span>
+        </label>
+        <div class="field" style="margin-top:12px;">
+          <label>Medications, including over-the-counter &amp; supplements <span class="hint">name, dose, how often</span></label>
+          <textarea id="medications" placeholder="e.g. Metformin 500mg twice daily; Vitamin D 1000IU daily"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Medical &amp; Family History</div>
+        <div class="field" style="margin-bottom:14px;">
+          <label>Ongoing or significant medical conditions <span class="hint">past &amp; present</span></label>
+          <textarea id="conditions" placeholder="e.g. Asthma, Type 2 diabetes, previous surgery"></textarea>
+        </div>
+        <div class="field">
+          <label>Significant family history <span class="hint">close relatives</span></label>
+          <textarea id="familyHistory" placeholder="e.g. Heart disease, breast cancer, diabetes"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Lifestyle &amp; Immunisation</div>
+        <div class="field" style="margin-bottom:16px;">
+          <label>Smoking Status</label>
+          <div class="tile-group" id="smokingTiles">
+            <div class="tile" data-val="Never smoked" onclick="selectTile('smokingTiles','smoking',this)">Never</div>
+            <div class="tile" data-val="Ex-smoker" onclick="selectTile('smokingTiles','smoking',this)">Ex-smoker</div>
+            <div class="tile" data-val="Current smoker" onclick="selectTile('smokingTiles','smoking',this)">Current</div>
+          </div>
+          <input type="hidden" id="smoking">
+        </div>
+        <div class="field-row col-2">
+          <div class="field">
+            <label>Alcohol Consumption</label>
+            <div class="select-wrap">
+              <select id="alcohol">
+                <option value="">Select…</option>
+                <option value="None">None</option>
+                <option value="Occasional">Occasional</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Daily">Daily</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Are your immunisations up to date?</label>
+            <div class="select-wrap">
+              <select id="immunisations">
+                <option value="">Select…</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="Unsure">Unsure</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 6: Consent & Privacy ═══ -->
+    <div class="form-section" id="section5">
+      <div class="section-header">
+        <div class="section-label">Step 6 of 7</div>
+        <div class="section-title">Consent &amp; Privacy</div>
+        <div class="section-subtitle">Please read and confirm the following before submitting.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Privacy Collection Statement</div>
+        <div class="info-block">
+          <p><strong>How we handle your information.</strong> Mishricky Medical collects your personal and health information to provide you with quality healthcare and to manage our services. We handle your information in accordance with the <strong>Privacy Act 1988</strong> and the Australian Privacy Principles.</p>
+          <p>Your information may be shared with treating practitioners within the practice, and — with your consent — with other healthcare providers, specialists, pathology and imaging services, and government agencies such as Medicare. We will not disclose your information for any other purpose without your consent unless required or authorised by law.</p>
+          <p>You may request access to, or correction of, your health record at any time by contacting reception.</p>
+        </div>
+        <label class="check-item" id="consentPrivacyItem">
+          <input type="checkbox" id="consentPrivacy">
+          <span class="check-text"><strong>I consent to the collection and handling of my information <span class="req-tag">(required)</span></strong>I have read and understood the Privacy Collection Statement and consent to Mishricky Medical collecting, using and storing my personal and health information for the purpose of providing my healthcare.</span>
+        </label>
+        <span class="error-msg" id="consentPrivacyErr" style="margin-top:4px;">You must accept the Privacy Collection Statement to continue.</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Communication &amp; Sharing Preferences</div>
+        <label class="check-item" id="consentCommsItem">
+          <input type="checkbox" id="consentComms">
+          <span class="check-text"><strong>Appointment reminders &amp; recalls</strong>I consent to receive appointment reminders, health recalls and results notifications by SMS and/or email.</span>
+        </label>
+        <label class="check-item" id="consentTransferItem">
+          <input type="checkbox" id="consentTransfer">
+          <span class="check-text"><strong>Transfer of previous records</strong>I consent to Mishricky Medical requesting my health records from my previous doctor or practice.</span>
+        </label>
+        <label class="check-item" id="consentMyHRItem">
+          <input type="checkbox" id="consentMyHR">
+          <span class="check-text"><strong>My Health Record</strong>I consent to my health information being uploaded to, and accessed via, My Health Record.</span>
+        </label>
+        <label class="check-item" id="consentMyMedicareItem">
+          <input type="checkbox" id="consentMyMedicare">
+          <span class="check-text"><strong>MyMedicare registration</strong>I am interested in registering for MyMedicare to nominate Mishricky Medical as my regular practice. Reception will help me complete this.</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 7: Review ═══ -->
+    <div class="form-section" id="section6">
+      <div class="section-header">
+        <div class="section-label">Step 7 of 7</div>
         <div class="section-title">Review &amp; Confirm</div>
         <div class="section-subtitle">Please check your details below before submitting.</div>
       </div>
@@ -640,6 +1045,26 @@
       <div class="card">
         <div class="card-title">Address &amp; Contact</div>
         <div class="summary-grid" id="reviewContact"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Cultural Background</div>
+        <div class="summary-grid" id="reviewCultural"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Emergency &amp; Care Team</div>
+        <div class="summary-grid" id="reviewEmergency"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Health Summary</div>
+        <div class="summary-grid" id="reviewHealth"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Consent</div>
+        <div class="summary-grid" id="reviewConsent"></div>
       </div>
     </div>
 
@@ -666,7 +1091,14 @@
 <script>
   // ── State ──
   let currentSection = 0;
-  const totalSections = 3;
+  const totalSections = 7;
+
+  // ── Consent / checkbox visual toggle ──
+  document.querySelectorAll('.check-item input[type="checkbox"]').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      this.closest('.check-item').classList.toggle('checked', this.checked);
+    });
+  });
 
   // ── Tile selector ──
   function selectTile(groupId, hiddenId, el) {
@@ -837,26 +1269,54 @@
       }
     }
 
+    // Section 3 (Cultural Background) – all fields optional, nothing to block on.
+
+    if (n === 3) {
+      // Emergency / next of kin phone numbers – validate format only if entered
+      const phoneTest = v => /^(\+?61|0)[0-9]{8,9}$/.test(v.replace(/\s/g,''));
+      optionalCheck('emergPhone', 'emergPhoneErr', phoneTest);
+      optionalCheck('nokPhone',   'nokPhoneErr',   phoneTest);
+    }
+
+    // Section 4 (Health Summary) – all fields optional, nothing to block on.
+
+    if (n === 5) {
+      // Privacy collection statement must be accepted to proceed
+      const privacyOk = document.getElementById('consentPrivacy').checked;
+      showErr('consentPrivacyErr', !privacyOk);
+      if (!privacyOk) ok = false;
+    }
+
     return ok;
   }
 
   // ── Build review ──
+  function chk(id) { return document.getElementById(id).checked ? 'Yes' : 'No'; }
+
   function buildReview() {
     const dob = `${val('dobDay').padStart(2,'0')}/${val('dobMonth').padStart(2,'0')}/${val('dobYear')}`;
     const mc = val('medicareNo');
     const irn = val('medicareIRN');
+    const noAllergies = document.getElementById('noAllergies').checked;
+    const noMeds = document.getElementById('noMeds').checked;
 
     renderSummary('reviewPersonal', [
+      { label:'Title',         val: val('title') },
       { label:'First Name',    val: val('firstName') },
       { label:'Surname',       val: val('lastName') },
+      { label:'Preferred Name',val: val('preferredName') },
       { label:'Date of Birth', val: dob },
       { label:'Sex at Birth',  val: val('sexAtBirth') },
+      { label:'Gender',        val: val('genderIdentity') },
+      { label:'Pronouns',      val: val('pronouns') },
     ]);
 
     renderSummary('reviewMedicare', [
       { label:'Medicare No',       val: mc + (irn ? ' / IRN ' + irn : '') },
       { label:'Expiry',            val: val('medicareExpiry') },
       { label:'Medicare Gender',   val: val('medicareGender') },
+      { label:'Concession',        val: val('concessionType') },
+      { label:'Card No',           val: val('concessionNo') },
     ]);
 
     renderSummary('reviewContact', [
@@ -866,6 +1326,42 @@
       { label:'Postcode', val: val('postcode') },
       { label:'Phone',    val: val('phone') },
       { label:'Email',    val: val('email') || '—' },
+      { label:'Preferred Contact', val: val('preferredContact') },
+    ]);
+
+    renderSummary('reviewCultural', [
+      { label:'Aboriginal / Torres Strait Islander', val: val('atsiStatus') },
+      { label:'Country of Birth', val: val('countryOfBirth') },
+      { label:'Language at Home', val: val('languageHome') },
+      { label:'Interpreter Needed', val: val('interpreter') },
+    ]);
+
+    renderSummary('reviewEmergency', [
+      { label:'Emergency Contact', val: val('emergName') },
+      { label:'Relationship',      val: val('emergRel') },
+      { label:'Emergency Phone',   val: val('emergPhone') },
+      { label:'Next of Kin',       val: val('nokName') },
+      { label:'NOK Phone',         val: val('nokPhone') },
+      { label:'Previous Practice', val: val('prevPractice') },
+      { label:'Preferred Pharmacy',val: val('pharmacy') },
+    ]);
+
+    renderSummary('reviewHealth', [
+      { label:'Allergies',       val: noAllergies ? 'No known allergies' : (val('allergies') || '—') },
+      { label:'Medications',     val: noMeds ? 'None' : (val('medications') || '—') },
+      { label:'Medical History', val: val('conditions') },
+      { label:'Family History',  val: val('familyHistory') },
+      { label:'Smoking',         val: val('smoking') },
+      { label:'Alcohol',         val: val('alcohol') },
+      { label:'Immunisations',   val: val('immunisations') },
+    ]);
+
+    renderSummary('reviewConsent', [
+      { label:'Privacy Statement', val: chk('consentPrivacy') },
+      { label:'Reminders / Recalls', val: chk('consentComms') },
+      { label:'Records Transfer', val: chk('consentTransfer') },
+      { label:'My Health Record', val: chk('consentMyHR') },
+      { label:'MyMedicare Interest', val: chk('consentMyMedicare') },
     ]);
   }
 
@@ -915,7 +1411,7 @@
     document.getElementById('section' + currentSection).classList.remove('active');
     currentSection++;
     document.getElementById('section' + currentSection).classList.add('active');
-    if (currentSection === 2) buildReview();
+    if (currentSection === totalSections - 1) buildReview();
     updateUI();
     window.scrollTo({ top:0, behavior:'smooth' });
   }
@@ -934,7 +1430,7 @@
   var WEB3FORMS_KEY = 'a0289885-a731-45af-82b2-61610456199c';
 
   function showSuccess(statusHtml) {
-    document.getElementById('section2').classList.remove('active');
+    document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
     document.getElementById('navBar').style.display = 'none';
     document.getElementById('successScreen').classList.add('active');
     document.getElementById('emailStatus').innerHTML = statusHtml;
@@ -983,21 +1479,54 @@
 
   function submitForm() {
     const dob = `${val('dobDay').padStart(2,'0')}/${val('dobMonth').padStart(2,'0')}/${val('dobYear')}`;
+    const noAllergies = document.getElementById('noAllergies').checked;
+    const noMeds = document.getElementById('noMeds').checked;
     const data = {
+      "Title":             val('title') || '—',
       "First Name":        val('firstName'),
       "Surname":           val('lastName'),
+      "Preferred Name":    val('preferredName') || '—',
       "Date of Birth":     dob,
       "Sex at Birth":      val('sexAtBirth'),
+      "Gender Identity":   val('genderIdentity') || '—',
+      "Pronouns":          val('pronouns') || '—',
       "Medicare No":       val('medicareNo').replace(/\s/g,''),
       "IRN":               val('medicareIRN') || '—',
       "Medicare Expiry":   val('medicareExpiry'),
       "Medicare Gender":   val('medicareGender'),
+      "Concession Card":   val('concessionType') || '—',
+      "Concession No":     val('concessionNo') || '—',
       "Street":            val('street'),
       "Suburb":            val('suburb'),
       "State":             val('state'),
       "Postcode":          val('postcode'),
       "Phone":             val('phone'),
       "Email":             val('email') || '—',
+      "Preferred Contact": val('preferredContact') || '—',
+      "Aboriginal / Torres Strait Islander": val('atsiStatus') || '—',
+      "Country of Birth":  val('countryOfBirth') || '—',
+      "Language at Home":  val('languageHome') || '—',
+      "Interpreter Needed":val('interpreter') || '—',
+      "Emergency Contact": val('emergName') || '—',
+      "Emergency Relationship": val('emergRel') || '—',
+      "Emergency Phone":   val('emergPhone') || '—',
+      "Next of Kin":       val('nokName') || '—',
+      "Next of Kin Relationship": val('nokRel') || '—',
+      "Next of Kin Phone": val('nokPhone') || '—',
+      "Previous Practice": val('prevPractice') || '—',
+      "Preferred Pharmacy":val('pharmacy') || '—',
+      "Allergies":         noAllergies ? 'No known allergies' : (val('allergies') || '—'),
+      "Current Medications": noMeds ? 'None' : (val('medications') || '—'),
+      "Medical History":   val('conditions') || '—',
+      "Family History":    val('familyHistory') || '—',
+      "Smoking Status":    val('smoking') || '—',
+      "Alcohol":           val('alcohol') || '—',
+      "Immunisations Up To Date": val('immunisations') || '—',
+      "Consent – Privacy Statement": chk('consentPrivacy'),
+      "Consent – Reminders/Recalls": chk('consentComms'),
+      "Consent – Records Transfer": chk('consentTransfer'),
+      "Consent – My Health Record": chk('consentMyHR'),
+      "MyMedicare Interest": chk('consentMyMedicare'),
     };
 
     var emailTo = 'reception@mishrickymedical.com';
@@ -1031,9 +1560,14 @@
 
   function resetForm() {
     // Reset all fields
-    document.querySelectorAll('input').forEach(i => i.value = '');
+    document.querySelectorAll('input').forEach(i => {
+      if (i.type === 'checkbox') { i.checked = false; }
+      else { i.value = ''; }
+    });
+    document.querySelectorAll('textarea').forEach(t => t.value = '');
     document.querySelectorAll('select').forEach(s => s.selectedIndex = 0);
     document.querySelectorAll('.tile.selected').forEach(t => t.classList.remove('selected'));
+    document.querySelectorAll('.check-item.checked').forEach(c => c.classList.remove('checked'));
     document.querySelectorAll('.error-msg.show').forEach(e => e.classList.remove('show'));
     document.querySelectorAll('input.error, input.valid').forEach(i => {
       i.classList.remove('error','valid');
