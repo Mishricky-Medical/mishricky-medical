@@ -190,8 +190,8 @@
   }
 
   /* New Patient slide */
-  .np-title { font-size: 7vh; margin-bottom: 1.5vh; }
-  .np-subtitle { font-size: 3.6vh; margin-bottom: 3vh; max-width: 70vw; }
+  .np-title { font-size: 6.4vh; margin-bottom: 1.2vh; }
+  .np-subtitle { font-size: 3.4vh; margin-bottom: 2.2vh; max-width: 70vw; }
 
   .options-row {
     display: flex;
@@ -252,6 +252,18 @@
     line-height: 0;
   }
   .qr-box img { width: 22vh; height: 22vh; display: block; }
+
+  /* Single, full-width QR card (New Patient + Feedback slides) */
+  .option-card.qr-single {
+    gap: 2vh;
+    padding: 2.5vh 4vw;
+    width: 68vh;          /* fixed so both QR slides share identical dimensions */
+    max-width: 86vw;
+  }
+  .option-card.qr-single .qr-box { padding: 1.8vh; }
+  .option-card.qr-single .qr-box img { width: 33vh; height: 33vh; }
+  .option-card.qr-single .scan-hint { font-size: 2.9vh; }
+  .option-card.qr-single .opt-link { font-size: 3.5vh; padding: 1.6vh 4vw; }
 
   .scan-hint {
     font-weight: 500;
@@ -359,23 +371,35 @@
     </div>
     <div class="content">
       <div class="title np-title">New Patient?</div>
-      <div class="subtitle np-subtitle">Welcome! Choose the option that applies to you.</div>
+      <div class="subtitle np-subtitle">Welcome! Please complete our new patient form.</div>
       <div class="options-row">
 
-        <div class="option-card">
-          <div class="opt-situation">No appointment yet?</div>
-          <div class="opt-title">Book Online</div>
-          <div class="qr-box"><img id="qrHealthengine" alt="HealthEngine QR code"></div>
+        <div class="option-card qr-single">
+          <div class="qr-box"><img id="qrNewPatientForm" alt="New patient form QR code"></div>
           <div class="scan-hint">Scan with your phone, or tap below</div>
-          <a class="opt-link" id="linkHealthengine" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open HealthEngine</a>
+          <a class="opt-link" id="linkNewPatientForm" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open New Patient Form</a>
         </div>
 
-        <div class="option-card">
-          <div class="opt-situation">Already booked?</div>
-          <div class="opt-title">Register Your Details</div>
-          <div class="qr-box"><img id="qrOnboarding" alt="Registration form QR code"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide: Patient Survey -->
+  <div class="slide" data-duration="12000">
+    <div class="header">
+      <div class="brand">
+        <img class="brandLogo" alt="MM">
+      </div>
+    </div>
+    <div class="content">
+      <div class="title np-title">Share Your Feedback</div>
+      <div class="subtitle np-subtitle">Help us improve &mdash; take our quick patient survey.</div>
+      <div class="options-row">
+
+        <div class="option-card qr-single">
+          <div class="qr-box"><img id="qrSurvey" alt="Patient survey QR code"></div>
           <div class="scan-hint">Scan with your phone, or tap below</div>
-          <a class="opt-link" id="linkOnboarding" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Registration Form</a>
+          <a class="opt-link" id="linkSurvey" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Survey</a>
         </div>
 
       </div>
@@ -396,12 +420,12 @@
       <div class="price-label" style="margin-bottom: 3.5vh;">Total Fee</div>
       <div class="price-breakdown">
         <div class="component">
-          <span class="amount">$44</span>
+          <span class="amount">$45.05</span>
           <span class="label">Medicare Rebate</span>
         </div>
         <span class="plus">+</span>
         <div class="component">
-          <span class="amount">$41</span>
+          <span class="amount">$39.95</span>
           <span class="label">Gap Payment</span>
         </div>
       </div>
@@ -445,29 +469,6 @@
     </div>
   </div>
 
-  <!-- Slide: Patient Survey -->
-  <div class="slide" data-duration="12000">
-    <div class="header">
-      <div class="brand">
-        <img class="brandLogo" alt="MM">
-      </div>
-    </div>
-    <div class="content">
-      <div class="title np-title">Share Your Feedback</div>
-      <div class="subtitle np-subtitle">Help us improve &mdash; take our quick patient survey.</div>
-      <div class="options-row">
-
-        <div class="option-card">
-          <div class="opt-title">Patient Survey</div>
-          <div class="qr-box"><img id="qrSurvey" alt="Patient survey QR code"></div>
-          <div class="scan-hint">Scan to open on your phone</div>
-          <a class="opt-link" id="linkSurvey" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Survey</a>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
 </div>
 
 <div class="progress-bar" id="progressBar"></div>
@@ -488,10 +489,12 @@
   document.querySelector('.toiletIcon').src = toiletSrc;
 
   // ── New Patient slide: QR codes & links ──
-  // Your practice's HealthEngine booking page:
-  const HEALTHENGINE_URL = 'https://healthengine.com.au/medical-centre/nsw/wagga-wagga/mishricky-medical/s14079';
-  const ONBOARDING_URL   = 'https://mishrickymedical.com/mishricky_patient_onboarding.html';
-  const SURVEY_URL       = 'https://mishrickymedical.com/mishricky_patient_survey.html';
+  // HealthEngine new patient form for this practice:
+  const NEW_PATIENT_FORM_URL = 'https://healthengine.com.au/new-patient-form/v2/14079?cid=sos:pra:::npf::::jul22';
+  const SURVEY_URL           = 'https://mishrickymedical.com/mishricky_patient_survey.html';
+
+  // Supplied HealthEngine QR code, embedded so the slideshow works offline.
+  const newPatientQrSrc = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAtAAAALQAQAAAACRLHoxAAADc0lEQVR42u3dQW4bMQwFUKrI/a+sLppkSEruogjdzTNgwOM4b8EF8cGRNGvH1OtXoNFoNBqNRqPRaDQajUaj0Wg0Gv2Pr4+vD6t8vb+vd0Ssz+s8617pqv+vWqPRaPRcv46j/+7PnvzVmXfqy7v17VvvVms0Go2e6ddPn85X6/P9dOX1/d4pZa/Wx9UajUaj5/p1n2qs75T99OeetFdstUaj0ej/2K+fdF3nHc9sZKcOrtZoNBr9zn69L59XSdE78uQjd/Kt1mg0Gv2mfr1avn6m06vk6fMd15St1mg0Gv2Dr/X3/eh5Xv1MtCNlbvNrNBqNfm++fp2T88Q6UuLe6X5kvRup1mg0Gj2Zr58MvY+1ILvsmXn6cv20S9pWazQajZ7I11GycrSOvEoC3+k674SsK7LVGo1Goyfy9Tr2oNdUvcp0JNq9xt7l1RqNRqOn83W0dSHnfcbb7//MsyPsR0ej0ejpfB0pN0e5h3ifkPTEfXZ0tUaj0eiJfF1X6uVv+16Z3Xr3imjrtNUajUaj5/p1X+PRT+XL39WVJPWMEbVGo9Hod81Dbh082p3F3r3jsndGrdFoNHpmHrLL/cW6lu+Wtb/+65yiqDUajUZP5uvb3cXen5/vb3+rGVut0Wg0eiJf547dV2Lnfear7XW87WxUazQajZ7M1xF9Nd9thl179v0ZYWqNRqPRs/k6SqqOY8pxWymSp9fuN6LRaPS75iER533D/MSCvIpvXdK2+TUajUZPz0PqM9HvJ11H+s1qv81pXK3RaDR6rl/nrBzlNNXzxNVoZ0DVnZHyNRqNRk/OQ/pO8yid+9yRvltX78/lVWs0Go2em4ec5/P1U0NW7COJR3vCjHyNRqPRk/k6Z+OnB+92fT437LzrqNZoNBo9m6/7nPp8IkG82P9YX/I1Go1GT/br4w8pWfd+fJt/rGOPo1qj0Wj0D74++lyjZuT7HsfzFNVzbqLWaDQaPdOvo81DIu7Pb8wpO8rJIhHh+ehoNBr9hn59dt9+jmpElJP57vsh1RqNRqOn+/WZoPfllNXbWarnUwzUGo1Go9/Tr88TUnfp1uuy/s96PjQajX5Pv94vO3bN1JG+7fvZ1RqNRqOn+/W6dN78/POdenSdZ9fT+9QajUajB14v11+rNRqNRqPRaDQajUaj0Wg0Go1Go/8j/RuqWEm9MoKiXQAAAABJRU5ErkJggg==';
 
   function qrSrc(url) {
     return 'https://api.qrserver.com/v1/create-qr-code/?size=480x480&qzone=2&data=' + encodeURIComponent(url);
@@ -505,12 +508,11 @@
     if (a) a.href = url;
   }
 
-  setQr('qrHealthengine', HEALTHENGINE_URL);
-  setQr('qrOnboarding', ONBOARDING_URL);
+  const npQr = document.getElementById('qrNewPatientForm');
+  if (npQr) npQr.src = newPatientQrSrc;
   setQr('qrSurvey', SURVEY_URL);
 
-  setLink('linkHealthengine', HEALTHENGINE_URL);
-  setLink('linkOnboarding', ONBOARDING_URL);
+  setLink('linkNewPatientForm', NEW_PATIENT_FORM_URL);
   setLink('linkSurvey', SURVEY_URL);
 
   const slides = document.querySelectorAll('.slide');
