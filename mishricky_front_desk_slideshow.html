@@ -12,6 +12,7 @@
     --blue-200: #85c1e9;
     --white: #ffffff;
     --grey: #8c8c8c;
+    --gold: #f5b82e;
     --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 
@@ -287,6 +288,56 @@
   }
   .opt-link:hover { background: var(--blue-200); transform: scale(1.04); }
 
+  /* Google Review slide: five tappable stars */
+  .option-card.stars-card {
+    gap: 3vh;
+    padding: 5vh 4vw 4vh;
+    margin-top: 1.5vh;
+  }
+  .option-card.stars-card .scan-hint { font-size: 3.2vh; }
+  .stars-row { display: flex; gap: 1.6vw; }
+  /* Hollow light-blue outline by default; gold fill up to the hovered/tapped star */
+  .review-star {
+    display: block;
+    line-height: 0;
+    color: var(--blue-200);
+    transition: transform 0.2s ease, color 0.2s ease, filter 0.2s ease;
+  }
+  .review-star svg {
+    width: 15vh;
+    height: 15vh;
+    fill: transparent;
+    stroke: currentColor;
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+    transition: fill 0.2s ease;
+  }
+  .stars-row:hover .review-star,
+  .review-star.filled {
+    color: var(--gold);
+    filter: drop-shadow(0 0 2.5vh rgba(245,184,46,0.35));
+  }
+  .stars-row:hover .review-star svg,
+  .review-star.filled svg { fill: currentColor; }
+  .stars-row .review-star:hover ~ .review-star {
+    color: var(--blue-200);
+    filter: none;
+  }
+  .stars-row .review-star:hover ~ .review-star svg { fill: transparent; }
+  .review-star:hover { transform: scale(1.08); }
+  .review-star:active { transform: scale(0.94); }
+  .slide.active .review-star {
+    animation: starPop 0.5s cubic-bezier(.34,1.56,.64,1) both;
+    animation-delay: calc(0.5s + var(--i) * 0.12s);
+  }
+  @keyframes starPop {
+    from { opacity: 0; transform: scale(0.4); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slide.active .review-star { animation: none; }
+  }
+
   .progress-bar {
     position: fixed;
     bottom: 0;
@@ -465,6 +516,29 @@
     </div>
   </div>
 
+  <!-- Slide: Google Review -->
+  <div class="slide" data-duration="12000">
+    <div class="header">
+      <div class="brand">
+        <img class="brandLogo" alt="MM">
+      </div>
+    </div>
+    <div class="content">
+      <div class="title np-title">Rate Us on Google</div>
+      <div class="subtitle np-subtitle">We&rsquo;d appreciate your honest review of your visit.</div>
+      <div class="option-card stars-card">
+        <div class="stars-row">
+          <a class="review-star" style="--i:0" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Rate 1 star on Google"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.52l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96z"/></svg></a>
+          <a class="review-star" style="--i:1" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Rate 2 stars on Google"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.52l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96z"/></svg></a>
+          <a class="review-star" style="--i:2" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Rate 3 stars on Google"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.52l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96z"/></svg></a>
+          <a class="review-star" style="--i:3" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Rate 4 stars on Google"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.52l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96z"/></svg></a>
+          <a class="review-star" style="--i:4" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Rate 5 stars on Google"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.52l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96z"/></svg></a>
+        </div>
+        <div class="scan-hint">Tap the stars to leave a review on Google</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Slide: We're Hiring -->
   <div class="slide" data-duration="12000">
     <div class="header">
@@ -533,6 +607,9 @@
   // HealthEngine new patient form for this practice:
   const NEW_PATIENT_FORM_URL = 'https://healthengine.com.au/new-patient-form/v2/14079?cid=sos:pra:::npf::::jul22';
   const SURVEY_URL           = 'https://mishrickymedical.com/mishricky_patient_survey.html';
+  // Google "write a review" box for Mishricky Medical, Unit 11/325 Edward St, Wagga Wagga.
+  // Signed-out visitors are sent to Google sign-in first, then straight on to the review box.
+  const GOOGLE_REVIEW_URL    = 'https://search.google.com/local/writereview?placeid=ChIJL1ecRUmZGGsRa3YhCZiR8Gw';
 
   // Supplied HealthEngine QR code, embedded so the slideshow works offline.
   const newPatientQrSrc = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAtAAAALQAQAAAACRLHoxAAADc0lEQVR42u3dQW4bMQwFUKrI/a+sLppkSEruogjdzTNgwOM4b8EF8cGRNGvH1OtXoNFoNBqNRqPRaDQajUaj0Wg0Gv2Pr4+vD6t8vb+vd0Ssz+s8617pqv+vWqPRaPRcv46j/+7PnvzVmXfqy7v17VvvVms0Go2e6ddPn85X6/P9dOX1/d4pZa/Wx9UajUaj5/p1n2qs75T99OeetFdstUaj0ej/2K+fdF3nHc9sZKcOrtZoNBr9zn69L59XSdE78uQjd/Kt1mg0Gv2mfr1avn6m06vk6fMd15St1mg0Gv2Dr/X3/eh5Xv1MtCNlbvNrNBqNfm++fp2T88Q6UuLe6X5kvRup1mg0Gj2Zr58MvY+1ILvsmXn6cv20S9pWazQajZ7I11GycrSOvEoC3+k674SsK7LVGo1Goyfy9Tr2oNdUvcp0JNq9xt7l1RqNRqOn83W0dSHnfcbb7//MsyPsR0ej0ejpfB0pN0e5h3ifkPTEfXZ0tUaj0eiJfF1X6uVv+16Z3Xr3imjrtNUajUaj5/p1X+PRT+XL39WVJPWMEbVGo9Hod81Dbh082p3F3r3jsndGrdFoNHpmHrLL/cW6lu+Wtb/+65yiqDUajUZP5uvb3cXen5/vb3+rGVut0Wg0eiJf547dV2Lnfear7XW87WxUazQajZ7M1xF9Nd9thl179v0ZYWqNRqPRs/k6SqqOY8pxWymSp9fuN6LRaPS75iER533D/MSCvIpvXdK2+TUajUZPz0PqM9HvJ11H+s1qv81pXK3RaDR6rl/nrBzlNNXzxNVoZ0DVnZHyNRqNRk/OQ/pO8yid+9yRvltX78/lVWs0Go2em4ec5/P1U0NW7COJR3vCjHyNRqPRk/k6Z+OnB+92fT437LzrqNZoNBo9m6/7nPp8IkG82P9YX/I1Go1GT/br4w8pWfd+fJt/rGOPo1qj0Wj0D74++lyjZuT7HsfzFNVzbqLWaDQaPdOvo81DIu7Pb8wpO8rJIhHh+ehoNBr9hn59dt9+jmpElJP57vsh1RqNRqOn+/WZoPfllNXbWarnUwzUGo1Go9/Tr88TUnfp1uuy/s96PjQajX5Pv94vO3bN1JG+7fvZ1RqNRqOn+/W6dN78/POdenSdZ9fT+9QajUajB14v11+rNRqNRqPRaDQajUaj0Wg0Go1Go/8j/RuqWEm9MoKiXQAAAABJRU5ErkJggg==';
@@ -555,6 +632,14 @@
 
   setLink('linkNewPatientForm', NEW_PATIENT_FORM_URL);
   setLink('linkSurvey', SURVEY_URL);
+  // Review stars: tapping fills the stars up to the one tapped, then opens Google.
+  const reviewStars = document.querySelectorAll('.review-star');
+  reviewStars.forEach((a, i) => {
+    a.href = GOOGLE_REVIEW_URL;
+    a.addEventListener('click', () => {
+      reviewStars.forEach((s, j) => s.classList.toggle('filled', j <= i));
+    });
+  });
 
   const slides = document.querySelectorAll('.slide');
   const progressBar = document.getElementById('progressBar');
@@ -567,6 +652,7 @@
 
   function goToSlide(index) {
     slides[current].classList.remove('active');
+    reviewStars.forEach(s => s.classList.remove('filled'));
     current = (index + slides.length) % slides.length;
     slides[current].classList.add('active');
     startTime = Date.now();
