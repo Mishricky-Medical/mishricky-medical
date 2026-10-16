@@ -288,13 +288,14 @@
   }
   .opt-link:hover { background: var(--blue-200); transform: scale(1.04); }
 
-  /* Google Review slide: five tappable stars */
+  /* Google Review slide: QR code above five tappable stars */
   .option-card.stars-card {
-    gap: 3vh;
-    padding: 5vh 4vw 4vh;
-    margin-top: 1.5vh;
+    gap: 2vh;
+    padding: 2.5vh 4vw 3vh;
   }
-  .option-card.stars-card .scan-hint { font-size: 3.2vh; }
+  .option-card.stars-card .qr-box { padding: 1.8vh; }
+  .option-card.stars-card .qr-box img { width: 27vh; height: 27vh; }
+  .option-card.stars-card .scan-hint { font-size: 2.9vh; }
   .stars-row { display: flex; gap: 1.6vw; }
   /* Hollow light-blue outline by default; gold fill up to the hovered/tapped star */
   .review-star {
@@ -304,8 +305,8 @@
     transition: transform 0.2s ease, color 0.2s ease, filter 0.2s ease;
   }
   .review-star svg {
-    width: 15vh;
-    height: 15vh;
+    width: 12vh;
+    height: 12vh;
     fill: transparent;
     stroke: currentColor;
     stroke-width: 1.2;
@@ -527,6 +528,8 @@
       <div class="title np-title">Rate Us on Google</div>
       <div class="subtitle np-subtitle">We&rsquo;d appreciate your honest review of your visit.</div>
       <div class="option-card stars-card">
+        <div class="qr-box"><img id="qrGoogleReview" alt="Google review QR code"></div>
+        <div class="scan-hint">Scan with your phone, or tap a star below</div>
         <div class="stars-row">
           <a class="review-star" style="--i:0" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Rate 1 star on Google"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.52l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96z"/></svg></a>
           <a class="review-star" style="--i:1" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Rate 2 stars on Google"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.52l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96z"/></svg></a>
@@ -534,7 +537,6 @@
           <a class="review-star" style="--i:3" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Rate 4 stars on Google"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.52l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96z"/></svg></a>
           <a class="review-star" style="--i:4" href="#" target="_blank" rel="noopener" onclick="event.stopPropagation()" aria-label="Rate 5 stars on Google"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.52l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96z"/></svg></a>
         </div>
-        <div class="scan-hint">Tap the stars to leave a review on Google</div>
       </div>
     </div>
   </div>
@@ -614,6 +616,9 @@
   // Supplied HealthEngine QR code, embedded so the slideshow works offline.
   const newPatientQrSrc = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAtAAAALQAQAAAACRLHoxAAADc0lEQVR42u3dQW4bMQwFUKrI/a+sLppkSEruogjdzTNgwOM4b8EF8cGRNGvH1OtXoNFoNBqNRqPRaDQajUaj0Wg0Gv2Pr4+vD6t8vb+vd0Ssz+s8617pqv+vWqPRaPRcv46j/+7PnvzVmXfqy7v17VvvVms0Go2e6ddPn85X6/P9dOX1/d4pZa/Wx9UajUaj5/p1n2qs75T99OeetFdstUaj0ej/2K+fdF3nHc9sZKcOrtZoNBr9zn69L59XSdE78uQjd/Kt1mg0Gv2mfr1avn6m06vk6fMd15St1mg0Gv2Dr/X3/eh5Xv1MtCNlbvNrNBqNfm++fp2T88Q6UuLe6X5kvRup1mg0Gj2Zr58MvY+1ILvsmXn6cv20S9pWazQajZ7I11GycrSOvEoC3+k674SsK7LVGo1Goyfy9Tr2oNdUvcp0JNq9xt7l1RqNRqOn83W0dSHnfcbb7//MsyPsR0ej0ejpfB0pN0e5h3ifkPTEfXZ0tUaj0eiJfF1X6uVv+16Z3Xr3imjrtNUajUaj5/p1X+PRT+XL39WVJPWMEbVGo9Hod81Dbh082p3F3r3jsndGrdFoNHpmHrLL/cW6lu+Wtb/+65yiqDUajUZP5uvb3cXen5/vb3+rGVut0Wg0eiJf547dV2Lnfear7XW87WxUazQajZ7M1xF9Nd9thl179v0ZYWqNRqPRs/k6SqqOY8pxWymSp9fuN6LRaPS75iER533D/MSCvIpvXdK2+TUajUZPz0PqM9HvJ11H+s1qv81pXK3RaDR6rl/nrBzlNNXzxNVoZ0DVnZHyNRqNRk/OQ/pO8yid+9yRvltX78/lVWs0Go2em4ec5/P1U0NW7COJR3vCjHyNRqPRk/k6Z+OnB+92fT437LzrqNZoNBo9m6/7nPp8IkG82P9YX/I1Go1GT/br4w8pWfd+fJt/rGOPo1qj0Wj0D74++lyjZuT7HsfzFNVzbqLWaDQaPdOvo81DIu7Pb8wpO8rJIhHh+ehoNBr9hn59dt9+jmpElJP57vsh1RqNRqOn+/WZoPfllNXbWarnUwzUGo1Go9/Tr88TUnfp1uuy/s96PjQajX5Pv94vO3bN1JG+7fvZ1RqNRqOn+/W6dN78/POdenSdZ9fT+9QajUajB14v11+rNRqNRqPRaDQajUaj0Wg0Go1Go/8j/RuqWEm9MoKiXQAAAABJRU5ErkJggg==';
 
+  // Google review QR code (points at GOOGLE_REVIEW_URL), embedded so it works offline.
+  const googleReviewQrSrc = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAArkAAAK5AQAAAACTJQsZAAAD6UlEQVR42u3dMZLiMBCF4WYIHHIEH8VHM0fzUTgC4QRTaBBCUrckb9UGTLWrfgVbLNhfMMGjkdttCZ9ZVwEGBgYGBgYGBgYG/iN4E7NWdcBDJB4lMj//850+z5/dn6/P8YU9/fSCv+RDCxgYGBj4/1YK+rlGewr6m1ye//7U4+Y2+dM611PS+iHogYGBgX0G/T1X4ztBr3K9njKlXI+npF8FE0EPDAwMfJigV6ndHBEr+sVu3RD0wMDAwEcL+hzjj3TU8k7+srWf3lCnEPTAwMDAzoPe7NHH1L7ka68p6MPrYqzauklHsEcPDAwMfIygN2sd7cD/+w29CHpgYGBgd0E/WOlibNDNk6rEr0G/27fJ3xgYGBjYVUU/vzdmHjrGVYlv2nDyV0Fc59xvuRD0wMDAwJ4r+lvdcM/3R5nbofIeveg2nKBr/qV8FbB1AwwMDOyyou96JS8513WJX2p+s5I0668Cgh4YGBjYV9Cn9d6HCaqP/r1y27xZ3aY9WzfAwMDAToN+kOs32zyZS/zyVbDJTgMmFT0wMDCwy6A3PfD1Uqv0bzQFfFPzc8MUMDAwsMug316vJjvDrDRPdrdD1Zq/XnstpxD0wMDAwE4r+rsecCA6+evEg/JVsKr2ymDbcAh6YGBgYJcVfXOba96jFx30po8+/gi41NZ7KcNvzlyMBQYGBj5ARb/o6ZXpuGYvZ7PdlP18S/7GwMDAwC4r+tfa7ZJvLtd2jyYh6IGBgYGdB323R988cqobkjCYWM/WDTAwMLDLoO/ufmq65EVPw9GPEjT3zqpBxgQ9MDAwsKeg7yaUNSsnf3lmbChvNPdY0XUDDAwM7DToTZf8uje3+Fv/CGgG1PPgEWBgYGDnFf3+3U+DoWZ5TanEr0HPCARgYGBgl0FvbnZKb+ersw/dgCl2kLEagbCqmp+gBwYGBnZY0Q/66NVQs7QGNb/0N0wR9MDAwMBuK/oyfj6vqX+2YJmJUI8wQc+sG2BgYGCnFf0wxrt63WzJ395HNIugBwYGBnZZ0YvIuIVGUq7HI4aN9eYNbpgCBgYGdlvRN2srFX3Q971203DiOtVTuBgLDAwM7LqiL2tVj5w61fQfDKg3T5Ul6IGBgYEdB/2sZ5jpB8CqPXp1Z+xVpJ91I6Ku3xL0wMDAwN6Cvkye1BV90M+MldpY3z2JJC1GIAADAwMfJei38vGpjrM0TyIRO4++HsHFWGBgYOBjVPT2Sd/q2qvYjswwHGdJ0AMDAwP7C3qzRz9owzHdlKvty4kvFnsCQQ8MDAzsK+jNWu0TYXe2blSTDUPNgIGBgZ0H/QfWFRgYGBgYGBgYGBj4D+Bf8OPijUdRmGQAAAAASUVORK5CYII=';
+
   function qrSrc(url) {
     return 'https://api.qrserver.com/v1/create-qr-code/?size=480x480&qzone=2&data=' + encodeURIComponent(url);
   }
@@ -629,6 +634,8 @@
   const npQr = document.getElementById('qrNewPatientForm');
   if (npQr) npQr.src = newPatientQrSrc;
   setQr('qrSurvey', SURVEY_URL);
+  const reviewQr = document.getElementById('qrGoogleReview');
+  if (reviewQr) reviewQr.src = googleReviewQrSrc;
 
   setLink('linkNewPatientForm', NEW_PATIENT_FORM_URL);
   setLink('linkSurvey', SURVEY_URL);
